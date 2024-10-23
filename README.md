@@ -1,5 +1,5 @@
 # Readme
-A note about mutexbase.
+A note about Mutexbase.
 
 ### 互斥锁数据库
 
