@@ -12,6 +12,7 @@ Oracle是一种高一致性数据库，基于Oracle的互斥锁的具体实现�
 Redis是一种高及时性数据库，基于Redis的互斥锁的具体实现如下：
 ```python
 r.set('foo.lock', 'token', nx=True)
+
 r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo.lock', 'token')
 ```
 
