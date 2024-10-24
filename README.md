@@ -3,22 +3,20 @@ A note about Network-Based Locking System.
 
 ### 网络锁系统
 
-数据库有一个共性，那就是创建unique记录的操作是互斥的。
+很多数据库都有一个特点，那就是创建unique记录的操作是互斥的，可以利用这一个特点来实现互斥锁。
 
 Oracle是一种高一致性数据库，基于Oracle的互斥锁的具体实现如下：
 ```python
+cursor.execute('CREATE TABLE foo (name , token )')
+cursor.execute('INSERT INTO foo (name, token) VALUES (:name, :token)', name='bar', token='token')
+cursor.execute('DELETE FROM foo WHERE name=:name AND token=:token', name='bar', token='token')
 ```
 
 Redis是一种高及时性数据库，基于Redis的互斥锁的具体实现如下：
 ```python
-r.set('foo.lock', 'token', nx=True)
-
-r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo.lock', 'token')
+r.set('bar', 'token', nx=True)
+r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'bar', 'token')
 ```
-
-最佳实践：
-- 给锁设置一个只有自己知道的token，解锁时验证token，以防解了别人加的锁。
-- 不要设置超时，因为网络锁系统没有有效的手段阻止超时的应用程序继续访问对应的共享资源。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
