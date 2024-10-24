@@ -1,7 +1,7 @@
 # Readme
-A note about Locking System.
+A note about Network-Based Locking System.
 
-### 锁系统
+### 基于网络的锁系统
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
