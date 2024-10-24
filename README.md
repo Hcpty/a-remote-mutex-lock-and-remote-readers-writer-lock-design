@@ -1,5 +1,5 @@
 # Readme
-A note about Network-Based Locking System.
+A note about Network-Based Locking Systems.
 
 ### 基于网络的锁系统
 
