@@ -18,11 +18,13 @@ r.set('foo_locks:123', 'token', nx=True)  # acquire mutext
 r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks:123', 'token')  # release mutext
 ```
 
+使用token的目的是防止解了别人加的锁。
+
+不要设置锁的超时，因为网络锁系统没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。
+
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
 - [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
-- [UNIQUE Constraint - Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/constraint.html)
-- [oracle/python-oracledb - GitHub](https://github.com/oracle/python-oracledb/)
-- [SET NX - Redis](https://redis.io/docs/latest/commands/set/)
-- [redis/redis-py - GitHub](https://github.com/redis/redis-py)
+- [UNIQUE Constraint - Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/constraint.html) and [oracle/python-oracledb - GitHub](https://github.com/oracle/python-oracledb/)
+- [SET NX - Redis](https://redis.io/docs/latest/commands/set/) and [redis/redis-py - GitHub](https://github.com/redis/redis-py)
