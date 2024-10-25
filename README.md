@@ -1,7 +1,11 @@
 # Readme
 A note about Network-Based Locking System.
 
-### 网络锁系统
+### Network-Based Locking System (NLS)
+
+可以利用database来实现NLS，这种方法不graceful，但efficient。
+
+##### 互斥锁
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现互斥锁。
 
@@ -20,7 +24,7 @@ r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", K
 
 使用随机生成的token的目的是防止release了别人acquired的互斥锁。
 
-不要给锁设置某种超时，因为网络锁系统没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。应该用合理的方式解决因应用程序崩溃或网络故障导致的锁未被正常释放的问题。
+不要给锁设置某种超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。应该用合理的方式解决因应用程序崩溃或网络故障导致的锁未被正常释放的问题。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
