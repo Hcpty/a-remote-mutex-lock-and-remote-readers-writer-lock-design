@@ -3,7 +3,7 @@ A note about Network-Based Locking System.
 
 ### 网络锁系统
 
-Database有一种特性，即创建unique记录的操作通常是互斥的，所以可以利用这个特性来实现互斥锁。
+几乎Database都有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现互斥锁。
 
 Oracle是一种高一致性数据库，基于Oracle实现互斥锁的代码如下：
 ```python
