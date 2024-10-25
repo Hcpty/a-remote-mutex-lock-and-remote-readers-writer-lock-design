@@ -18,8 +18,8 @@ cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', 
 
 Redis是一种高及时性数据库，基于Redis实现互斥锁的代码如下：
 ```python
-r.set('foo_locks:123', 'wsEy4', nx=True)  # acquire mutext
-r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks:123', 'wsEy4')  # release mutext
+r.set('foo_locks:123', 'wsEy4', nx=True)  # acquire mutex
+r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks:123', 'wsEy4')  # release mutex
 ```
 
 使用随机生成的token的目的是防止release了别人acquired的互斥锁。
