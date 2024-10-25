@@ -27,9 +27,9 @@ cursor.execute('INSERT INTO foo_locks (lock_id, token) VALUES (:lock_id, :token)
 cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', [123, 'WseAI'])  # release mutex
 ```
 
-acquired_at的用途是查找异常未释放的锁。
+`acquired_at`的用途是查找异常未释放的锁。
 
-使用随机生成的token的目的是防止release了别人acquired的互斥锁。
+使用随机生成的`token`的目的是防止release了别人acquired的互斥锁。
 
 不要给锁设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。应该使用合理的方式解决因网络故障或应用程序崩溃而导致的锁未被正常释放的问题。
 
