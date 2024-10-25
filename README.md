@@ -9,7 +9,7 @@ A note about Network-Based Locking System.
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现mutex。
 
-基于Apache Cassandra实现互斥锁的代码如下：
+基于Apache Cassandra实现mutex的代码如下：
 ```python
 session.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
 
@@ -17,13 +17,13 @@ session.execute('INSERT INTO foo_locks (lock_id, token) VALUES (%s, %s);', (123,
 session.execute('DELETE FROM foo_locks WHERE lock_id=%s AND token=%s', (123, 'FSzeY'))  # release mutex
 ```
 
-基于Redis实现互斥锁的代码如下：
+基于Redis实现mutex的代码如下：
 ```python
 r.set('foo_locks/123', '1729837899653,wsEy4', nx=True)  # acquire mutex
 r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks/123', '1729837899653,wsEy4')  # release mutex
 ```
 
-基于Oracle实现Mutex的代码如下：
+基于Oracle实现mutex的代码如下：
 ```python
 cursor.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
 
