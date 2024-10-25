@@ -15,24 +15,70 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 
 基于Apache Cassandra实现Mutex的代码如下：
 ```python
-session.execute('CREATE TABLE foo_Mutexes (PRIMARY KEY (Mutex_id), Mutex_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for Mutexes
+# Prepare schema and table for Mutexes:
+session.execute(
+  """CREATE TABLE foo_mutexes (
+    PRIMARY KEY (mutex_id),
+    mutex_id INT,
+    acquired_at TIMESTAMP,
+    mark VARCHAR
+  );"""
+)
 
-session.execute('INSERT INTO foo_Mutexes (Mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire Mutex
-session.execute('DELETE FROM foo_Mutexes WHERE Mutex_id=%s AND mark=%s;', [123, 'FSzeY'])  # release Mutex
+# Acquire Mutex:
+session.execute(
+  'INSERT INTO foo_mutexes (mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;',
+  [123, 'FSzeY']
+)
+
+# Release Mutex:
+session.execute(
+  'DELETE FROM foo_mutexes WHERE mutex_id=%s AND mark=%s;',
+  [123, 'FSzeY']
+)
 ```
 
 基于Redis实现Mutex的代码如下：
 ```python
-r.set('foo_Mutexes/123', '1729837899653,wsEy4', nx=True)  # acquire Mutex
-r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_Mutexes/123', '1729837899653,wsEy4')  # release Mutex
+# Acquire Mutex:
+r.set(
+  'foo_mutexes/123',
+  '1729837899653,wsEy4',
+  nx=True
+)
+
+# Release Mutex:
+r.eval(
+  'if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end',
+  1,
+  'foo_mutexes/123',
+  '1729837899653,wsEy4'
+)
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的代码如下：
 ```python
-cursor.execute('CREATE TABLE foo_Mutexes (PRIMARY KEY (Mutex_id), Mutex_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, mark CHAR(5) NOT NULL);')  # prepare schema and table for Mutexes
+# Prepare schema and table for Mutexes:
+cursor.execute(
+  """CREATE TABLE foo_mutexes (
+    PRIMARY KEY (mutex_id),
+    mutex_id INTEGER,
+    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mark CHAR(5) NOT NULL
+  );"""
+)
 
-cursor.execute('INSERT INTO foo_Mutexes (Mutex_id, mark) VALUES (:Mutex_id, :mark);', [123, 'WseAI'])  # acquire Mutex
-cursor.execute('DELETE FROM foo_Mutexes WHERE Mutex_id=:Mutex_id AND mark=:mark;', [123, 'WseAI'])  # release Mutex
+# Acquire Mutex:
+cursor.execute(
+  'INSERT INTO foo_mutexes (mutex_id, mark) VALUES (:mutex_id, :mark);',
+  [123, 'WseAI']
+)
+
+# Release Mutex:
+cursor.execute(
+  'DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;',
+  [123, 'WseAI']
+)
 ```
 
 注意事项：
@@ -47,7 +93,37 @@ cursor.execute('DELETE FROM foo_Mutexes WHERE Mutex_id=:Mutex_id AND mark=:mark;
 可以在Mutex的基础上实现Readers-Writer Lock。
 
 基于Apache Cassandra实现Readers-Writer Lock的代码如下：
+
 ```python
+# Prepare schemas and tables for Readers-writer Tables, Readers-writer Table Mutexes and Readers-writer Locks:
+session.execute(
+  """CREATE TABLE foo_readers_writer_tables (
+    PRIMARY KEY (table_id),
+    table_id INT,
+    readers_writer_table,
+    created_at TIMESTAMP
+  );"""
+)
+session.execute(
+  """CREATE TABLE foo_readers_writer_table_mutexes (
+    PRIMARY KEY (mutex_id),
+    mutex_id INT,
+    acquired_at TIMESTAMP,
+    mark VARCHAR
+  );"""
+)
+session.execute(
+  """CREATE TABLE foo_readers_writer_locks (
+    PRIMARY KEY (lock_id),
+    lock_id INT,
+    acquired_at TIMESTAMP,
+    mark VARCHAR
+  );"""
+)
+
+# Reader：
+
+# Writer：
 ```
 
 基于Redis实现Readers-Writer Lock的代码如下：
