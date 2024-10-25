@@ -87,7 +87,7 @@ cursor.execute(
 
 当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock更高效。
 
-可以在Mutex的基础上实现Readers-Writer Lock。
+可以使用类似的方法实现Readers-Writer Lock。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
