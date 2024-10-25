@@ -66,8 +66,8 @@ r.eval(
 cursor.execute(
   """CREATE TABLE foo_mutexes (
     PRIMARY KEY (mutex_id),
-    mutex_id INTEGER,
-    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mutex_id INTEGER NOT NULL,
+    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     mark CHAR(5) NOT NULL
   );"""
 )
@@ -95,40 +95,6 @@ cursor.execute(
 当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock更高效。
 
 可以在Mutex的基础上实现Readers-Writer Lock。
-
-基于Apache Cassandra实现Readers-Writer Lock的代码如下：
-
-```python
-# Prepare schema and table for Readers-Writer Tables:
-session.execute(
-  """CREATE TABLE foo_readers_writer_tables (
-    PRIMARY KEY (table_id),
-    table_id INT,
-    readers_writer_table,
-    created_at TIMESTAMP
-  );"""
-)
-
-# Prepare schema and table for Readers-Writer Table Mutexes:
-session.execute(
-  """CREATE TABLE foo_readers_writer_table_mutexes (
-    PRIMARY KEY (mutex_id),
-    mutex_id INT,
-    acquired_at TIMESTAMP,
-    mark VARCHAR
-  );"""
-)
-
-# Prepare schema and table for Readers-Writer Locks:
-session.execute(
-  """CREATE TABLE foo_readers_writer_locks (
-    PRIMARY KEY (lock_id),
-    lock_id INT,
-    acquired_at TIMESTAMP,
-    mark VARCHAR
-  );"""
-)
-```
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
