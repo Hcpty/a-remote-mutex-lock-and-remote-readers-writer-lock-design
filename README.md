@@ -19,5 +19,7 @@ r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", K
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
 - [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
+- [UNIQUE - Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/constraint.html)
 - [oracle/python-oracledb - GitHub](https://github.com/oracle/python-oracledb/)
+- [SET NX - Redis](https://redis.io/docs/latest/commands/set/)
 - [redis/redis-py - GitHub](https://github.com/redis/redis-py)
