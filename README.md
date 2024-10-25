@@ -3,7 +3,7 @@ A note about Network-Based Locking System.
 
 ### Network-Based Locking System (NLS)
 
-可以基于database来实现NLS，这种方式not very graceful，but very efficient。
+可以基于database来实现Network-Based Locking System (NLS)，这种方式not very graceful，but very efficient。
 
 ##### Mutex
 
