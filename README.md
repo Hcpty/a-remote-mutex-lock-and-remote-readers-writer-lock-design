@@ -3,7 +3,7 @@ A note about Network-Based Locking System.
 
 ### Network-Based Locking System (NLS)
 
-当位于不同机器上的应用程序并发地访问一组共享资源时，需要使用NLS。
+当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用NLS。
 
 可以基于database来实现Network-Based Locking System (NLS)，这种方式not very graceful，but very efficient。
 
