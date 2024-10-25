@@ -9,7 +9,7 @@ A note about Network-Based Locking System.
 
 ##### Mutex
 
-当访问共享资源的对象都是写者的时候，使用mutex很方便。
+当访问共享资源的应用程序都是写者的时候，使用mutex很方便。
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现mutex。
 
@@ -42,7 +42,7 @@ cursor.execute('DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;
 
 ##### Readers-Writer Lock
 
-访问共享资源的对象都是写者的时候，使用mutex很方便。而当访问共享资源的对象既有写者又有读者的时候，使用Readers-Writer Lock更高效。
+当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock更高效。
 
 可以在mutex的基础上实现Readers-Writer Lock。
 
