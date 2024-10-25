@@ -34,7 +34,7 @@ cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', 
 注意事项：
 - `acquired_at`的用途是查找异常未释放的mutex。
 - 使用随机生成的`token`的目的是防止release了别人acquired的mutex。
-- 不要给mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该解决网络故障。如果是因为应用程序崩溃而导致的锁未被正常释放，应该修复应用程序。
+- 不要给mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该修复应用程序。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
