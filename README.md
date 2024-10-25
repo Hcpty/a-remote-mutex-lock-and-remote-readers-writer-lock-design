@@ -99,7 +99,7 @@ cursor.execute(
 基于Apache Cassandra实现Readers-Writer Lock的代码如下：
 
 ```python
-# Prepare schema and table for Readers-Writer Table:
+# Prepare schema and table for Readers-Writer Tables:
 session.execute(
   """CREATE TABLE foo_readers_writer_tables (
     PRIMARY KEY (table_id),
@@ -109,7 +109,7 @@ session.execute(
   );"""
 )
 
-# Prepare schema and table for Readers-Writer Table Mutex:
+# Prepare schema and table for Readers-Writer Table Mutexes:
 session.execute(
   """CREATE TABLE foo_readers_writer_table_mutexes (
     PRIMARY KEY (mutex_id),
@@ -119,7 +119,7 @@ session.execute(
   );"""
 )
 
-# Prepare schema and table for Readers-Writer Lock:
+# Prepare schema and table for Readers-Writer Locks:
 session.execute(
   """CREATE TABLE foo_readers_writer_locks (
     PRIMARY KEY (lock_id),
