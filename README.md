@@ -78,7 +78,7 @@ cursor.execute(
 )
 ```
 
-附加两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
+注意附加两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
 
 不要企图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该先修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
 
