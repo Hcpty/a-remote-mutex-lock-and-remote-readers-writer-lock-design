@@ -99,8 +99,7 @@ cursor.execute(
 基于Apache Cassandra实现Readers-Writer Lock的代码如下：
 
 ```python
-# Prepare schemas and tables for Readers-writer Tables, Readers-writer Table Mutexes and Readers-writer Locks:
-
+# Prepare schema and table for Readers-Writer Table:
 session.execute(
   """CREATE TABLE foo_readers_writer_tables (
     PRIMARY KEY (table_id),
@@ -110,6 +109,7 @@ session.execute(
   );"""
 )
 
+# Prepare schema and table for Readers-Writer Table Mutex:
 session.execute(
   """CREATE TABLE foo_readers_writer_table_mutexes (
     PRIMARY KEY (mutex_id),
@@ -119,6 +119,7 @@ session.execute(
   );"""
 )
 
+# Prepare schema and table for Readers-Writer Lock:
 session.execute(
   """CREATE TABLE foo_readers_writer_locks (
     PRIMARY KEY (lock_id),
@@ -128,16 +129,6 @@ session.execute(
   );"""
 )
 ```
-
-基于Redis实现Readers-Writer Lock的代码如下：
-```python
-```
-
-基于Oracle Database或Oracle In-Memory Database实现Readers-Writer Lock的代码如下：
-```python
-```
-
-注意事项：
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
