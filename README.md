@@ -3,7 +3,7 @@ A note about Network-Based Locking System.
 
 ### Network-Based Locking System (NLS)
 
-可以利用database来实现NLS，这种方法not very graceful，but very efficient。
+可以利用database来实现NLS，这种方式not very graceful，but very efficient。
 
 ##### Mutex
 
@@ -33,7 +33,7 @@ acquired_at的用途是查找异常未释放的锁。
 
 不要给锁设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。应该使用合理的方式解决因网络故障或应用程序崩溃而导致的锁未被正常释放的问题。
 
-使用database的方案甚至不需要一个分开的NLS，database就是NLS。而且共享资源的访问情况在database中一目了然。
+这种基于database的方案甚至不需要一个分开的NLS，database就是NLS。而且共享资源的访问情况在database中一目了然。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
