@@ -20,14 +20,14 @@ session.execute(
   """CREATE TABLE foo_mutexes (
     PRIMARY KEY (mutex_id),
     mutex_id INT,
-    acquired_at TIMESTAMP,
-    mark VARCHAR
+    mark VARCHAR,
+    acquired_at TIMESTAMP
   );"""
 )
 
 # Acquire Mutex:
 session.execute(
-  'INSERT INTO foo_mutexes (mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;',
+  'INSERT INTO foo_mutexes (mutex_id, mark, acquired_at) VALUES (%s, %s, toTimestamp(now())) IF NOT EXISTS;',
   [123, 'FSzeY']
 )
 
@@ -41,7 +41,7 @@ session.execute(
 基于Redis实现Mutex的代码如下：
 ```python
 # Acquire Mutex:
-r.set('foo_mutexes/123', '1729837899653,wsEy4', nx=True)
+r.set('foo_mutexes/123', 'wsEy4,1729837899653', nx=True)
 
 # Release Mutex:
 lua_script = \
@@ -50,7 +50,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'foo_mutexes/123', '1729837899653,wsEy4')
+r.eval(lua_script, 1, 'foo_mutexes/123', 'wsEy4,1729837899653')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的代码如下：
@@ -60,8 +60,8 @@ cursor.execute(
   """CREATE TABLE foo_mutexes (
     PRIMARY KEY (mutex_id),
     mutex_id INTEGER NOT NULL,
-    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    mark CHAR(5) NOT NULL
+    mark CHAR(5) NOT NULL,
+    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   );"""
 )
 
