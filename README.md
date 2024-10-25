@@ -18,7 +18,7 @@ r.set('foo_locks:123', 'token', nx=True)  # acquire mutext
 r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks:123', 'token')  # release mutext
 ```
 
-使用token的目的是防止release了别人acquired的互斥锁。
+使用随机生成的token的目的是防止release了别人acquired的互斥锁。
 
 不要设置锁的超时，因为网络锁系统没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。应该用合理的方式解决因应用程序崩溃或网络故障导致的锁未被正常释放的问题。
 
