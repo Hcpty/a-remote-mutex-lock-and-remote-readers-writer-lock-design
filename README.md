@@ -9,42 +9,56 @@ A note about Network-Based Locking System.
 
 ##### Mutex
 
-当访问共享资源的应用程序都是写者的时候，使用mutex很方便。
+当访问共享资源的应用程序都是写者的时候，使用Mutex很方便。
 
-Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现mutex。
+Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现Mutex。
 
-基于Apache Cassandra实现mutex的代码如下：
+基于Apache Cassandra实现Mutex的代码如下：
 ```python
-session.execute('CREATE TABLE foo_mutexes (PRIMARY KEY (mutex_id), mutex_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for mutexes
+session.execute('CREATE TABLE foo_Mutexes (PRIMARY KEY (Mutex_id), Mutex_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for Mutexes
 
-session.execute('INSERT INTO foo_mutexes (mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire mutex
-session.execute('DELETE FROM foo_mutexes WHERE mutex_id=%s AND mark=%s;', [123, 'FSzeY'])  # release mutex
+session.execute('INSERT INTO foo_Mutexes (Mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire Mutex
+session.execute('DELETE FROM foo_Mutexes WHERE Mutex_id=%s AND mark=%s;', [123, 'FSzeY'])  # release Mutex
 ```
 
-基于Redis实现mutex的代码如下：
+基于Redis实现Mutex的代码如下：
 ```python
-r.set('foo_mutexes/123', '1729837899653,wsEy4', nx=True)  # acquire mutex
-r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_mutexes/123', '1729837899653,wsEy4')  # release mutex
+r.set('foo_Mutexes/123', '1729837899653,wsEy4', nx=True)  # acquire Mutex
+r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_Mutexes/123', '1729837899653,wsEy4')  # release Mutex
 ```
 
-基于Oracle Database或Oracle In-Memory Database实现mutex的代码如下：
+基于Oracle Database或Oracle In-Memory Database实现Mutex的代码如下：
 ```python
-cursor.execute('CREATE TABLE foo_mutexes (PRIMARY KEY (mutex_id), mutex_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, mark CHAR(5) NOT NULL);')  # prepare schema and table for mutexes
+cursor.execute('CREATE TABLE foo_Mutexes (PRIMARY KEY (Mutex_id), Mutex_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, mark CHAR(5) NOT NULL);')  # prepare schema and table for Mutexes
 
-cursor.execute('INSERT INTO foo_mutexes (mutex_id, mark) VALUES (:mutex_id, :mark);', [123, 'WseAI'])  # acquire mutex
-cursor.execute('DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;', [123, 'WseAI'])  # release mutex
+cursor.execute('INSERT INTO foo_Mutexes (Mutex_id, mark) VALUES (:Mutex_id, :mark);', [123, 'WseAI'])  # acquire Mutex
+cursor.execute('DELETE FROM foo_Mutexes WHERE Mutex_id=:Mutex_id AND mark=:mark;', [123, 'WseAI'])  # release Mutex
 ```
 
 注意事项：
-- `acquired_at`的用途是查找异常未释放的mutex。
-- 使用随机生成的`mark`的目的是防止release了别人acquired的mutex。
-- 不要试图给mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该先修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
+- `acquired_at`的用途是查找异常未释放的Mutex。
+- 使用随机生成的`mark`的目的是防止release了别人acquired的Mutex。
+- 不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该先修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
 
 ##### Readers-Writer Lock
 
 当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock更高效。
 
-可以在mutex的基础上实现Readers-Writer Lock。
+可以在Mutex的基础上实现Readers-Writer Lock。
+
+基于Apache Cassandra实现Readers-Writer Lock的代码如下：
+```python
+```
+
+基于Redis实现Readers-Writer Lock的代码如下：
+```python
+```
+
+基于Oracle Database或Oracle In-Memory Database实现Readers-Writer Lock的代码如下：
+```python
+```
+
+注意事项：
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
