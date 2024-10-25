@@ -21,7 +21,7 @@ r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", K
 
 基于Oracle实现Mutex的代码如下：
 ```python
-cursor.execute('CREATE TABLE foo_locks (lock_id INTEGER NOT NULL UNIQUE, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
+cursor.execute('CREATE TABLE foo_locks (lock_id INTEGER PRIMARY KEY, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
 
 cursor.execute('INSERT INTO foo_locks (lock_id, token) VALUES (:lock_id, :token);', [123, 'WseAI'])  # acquire mutex
 cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', [123, 'WseAI'])  # release mutex
