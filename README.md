@@ -13,7 +13,7 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 ```python
 session.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for mutex
 
-session.execute('INSERT INTO foo_locks (lock_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s);', [123, 'FSzeY'])  # acquire mutex
+session.execute('INSERT INTO foo_locks (lock_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire mutex
 session.execute('DELETE FROM foo_locks WHERE lock_id=%s AND mark=%s;', [123, 'FSzeY'])  # release mutex
 ```
 
