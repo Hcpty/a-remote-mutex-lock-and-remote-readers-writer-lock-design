@@ -11,7 +11,7 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 
 Oracle是一种高一致性数据库，基于Oracle实现互斥锁的代码如下：
 ```python
-cursor.execute('CREATE TABLE foo_locks (lock_id INTEGER NOT NULL UNIQUE, token CHAR(5) NOT NULL);')  # prepare schema and table
+cursor.execute('CREATE TABLE foo_locks (lock_id INTEGER NOT NULL UNIQUE, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
 cursor.execute('INSERT INTO foo_locks (lock_id, token) VALUES (:lock_id, :token);', [123, 'WseAI'])  # acquire mutex
 cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', [123, 'WseAI'])  # release mutex
 ```
