@@ -49,7 +49,11 @@ r.set(
 
 # Release Mutex:
 r.eval(
-  'if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end',
+  """if redis.call("GET", KEYS[1]) == ARGV[1] then
+    return redis.call("DEL", KEYS[1])
+  else
+    return 0
+  end""",
   1,
   'foo_mutexes/123',
   '1729837899653,wsEy4'
@@ -96,6 +100,7 @@ cursor.execute(
 
 ```python
 # Prepare schemas and tables for Readers-writer Tables, Readers-writer Table Mutexes and Readers-writer Locks:
+
 session.execute(
   """CREATE TABLE foo_readers_writer_tables (
     PRIMARY KEY (table_id),
@@ -104,6 +109,7 @@ session.execute(
     created_at TIMESTAMP
   );"""
 )
+
 session.execute(
   """CREATE TABLE foo_readers_writer_table_mutexes (
     PRIMARY KEY (mutex_id),
@@ -112,6 +118,7 @@ session.execute(
     mark VARCHAR
   );"""
 )
+
 session.execute(
   """CREATE TABLE foo_readers_writer_locks (
     PRIMARY KEY (lock_id),
@@ -120,10 +127,6 @@ session.execute(
     mark VARCHAR
   );"""
 )
-
-# Reader：
-
-# Writer：
 ```
 
 基于Redis实现Readers-Writer Lock的代码如下：
