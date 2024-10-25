@@ -11,24 +11,24 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 
 基于Apache Cassandra实现mutex的代码如下：
 ```python
-session.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for mutex
+session.execute('CREATE TABLE foo_mutexes (PRIMARY KEY (mutex_id), mutex_id INT, acquired_at TIMESTAMP, mark VARCHAR);')  # prepare schema and table for mutexes
 
-session.execute('INSERT INTO foo_locks (lock_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire mutex
-session.execute('DELETE FROM foo_locks WHERE lock_id=%s AND mark=%s;', [123, 'FSzeY'])  # release mutex
+session.execute('INSERT INTO foo_mutexes (mutex_id, acquired_at, mark) VALUES (%s, toTimestamp(now()), %s) IF NOT EXISTS;', [123, 'FSzeY'])  # acquire mutex
+session.execute('DELETE FROM foo_mutexes WHERE mutex_id=%s AND mark=%s;', [123, 'FSzeY'])  # release mutex
 ```
 
 基于Redis实现mutex的代码如下：
 ```python
-r.set('foo_locks/123', '1729837899653,wsEy4', nx=True)  # acquire mutex
-r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks/123', '1729837899653,wsEy4')  # release mutex
+r.set('foo_mutexes/123', '1729837899653,wsEy4', nx=True)  # acquire mutex
+r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_mutexes/123', '1729837899653,wsEy4')  # release mutex
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现mutex的代码如下：
 ```python
-cursor.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, mark CHAR(5) NOT NULL);')  # prepare schema and table for mutex
+cursor.execute('CREATE TABLE foo_mutexes (PRIMARY KEY (mutex_id), mutex_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, mark CHAR(5) NOT NULL);')  # prepare schema and table for mutexes
 
-cursor.execute('INSERT INTO foo_locks (lock_id, mark) VALUES (:lock_id, :mark);', [123, 'WseAI'])  # acquire mutex
-cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND mark=:mark;', [123, 'WseAI'])  # release mutex
+cursor.execute('INSERT INTO foo_mutexes (mutex_id, mark) VALUES (:mutex_id, :mark);', [123, 'WseAI'])  # acquire mutex
+cursor.execute('DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;', [123, 'WseAI'])  # release mutex
 ```
 
 注意事项：
