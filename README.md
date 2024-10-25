@@ -27,7 +27,7 @@ cursor.execute('INSERT INTO foo_locks (lock_id, token) VALUES (:lock_id, :token)
 cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND token=:token', [123, 'WseAI'])  # release mutex
 ```
 
-使用acquired_at的目的是查找异常未释放的锁。
+acquired_at的用途是查找异常未释放的锁。
 
 使用随机生成的token的目的是防止release了别人acquired的互斥锁。
 
