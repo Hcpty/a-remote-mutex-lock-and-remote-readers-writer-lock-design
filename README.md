@@ -11,10 +11,10 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 
 基于Apache Cassandra实现mutex的代码如下：
 ```python
-session.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL)')  # prepare schema and table for mutex
+session.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INT, acquired_at TIMESTAMP, token VARCHAR)')  # prepare schema and table for mutex
 
-session.execute('INSERT INTO foo_locks (lock_id, token) VALUES (%s, %s)', (123, 'FSzeY'))  # acquire mutex
-session.execute('DELETE FROM foo_locks WHERE lock_id=%s AND token=%s', (123, 'FSzeY'))  # release mutex
+session.execute('INSERT INTO foo_locks (lock_id, acquired_at, token) VALUES (%s, toTimestamp(now()), %s)', [123, 'FSzeY'])  # acquire mutex
+session.execute('DELETE FROM foo_locks WHERE lock_id=%s AND token=%s', [123, 'FSzeY'])  # release mutex
 ```
 
 基于Redis实现mutex的代码如下：
