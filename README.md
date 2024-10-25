@@ -40,6 +40,6 @@ cursor.execute('DELETE FROM foo_locks WHERE lock_id=:lock_id AND mark=:mark;', [
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
 - [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
-- [PRIMARY KEY - Apache Cassandra](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/ddl.html#primary-key) and [datastax/python-driver - GitHub](https://github.com/datastax/python-driver)
+- [INSERT IF NOT EXISTS - Apache Cassandra](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/dml.html#insert-statement) and [datastax/python-driver - GitHub](https://github.com/datastax/python-driver)
 - [SET NX - Redis](https://redis.io/docs/latest/commands/set/) and [redis/redis-py - GitHub](https://github.com/redis/redis-py)
 - [PRIMARY KEY - Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/constraint.html) and [oracle/python-oracledb - GitHub](https://github.com/oracle/python-oracledb/)
