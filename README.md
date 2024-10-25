@@ -5,7 +5,7 @@ A note about Network-Based Locking System.
 
 当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用Network-Based Locking System (NLS)。
 
-可以基于database来实现NLS，这种方式not very graceful，but very efficient。
+可以基于Database来实现NLS，这种方式not very graceful，but very efficient。
 
 ##### Mutex
 
