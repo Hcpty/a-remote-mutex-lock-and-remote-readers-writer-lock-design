@@ -41,11 +41,7 @@ session.execute(
 基于Redis实现Mutex的代码如下：
 ```python
 # Acquire Mutex:
-r.set(
-  'foo_mutexes/123',
-  '1729837899653,wsEy4',
-  nx=True
-)
+r.set('foo_mutexes/123', '1729837899653,wsEy4', nx=True)
 
 # Release Mutex:
 r.eval(
