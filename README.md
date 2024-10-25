@@ -23,7 +23,7 @@ r.set('foo_locks/123', '1729837899653,wsEy4', nx=True)  # acquire mutex
 r.eval('if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) else return 0 end', 1, 'foo_locks/123', '1729837899653,wsEy4')  # release mutex
 ```
 
-基于Oracle实现mutex的代码如下：
+基于Oracle Database或Oracle In-Memory Database实现mutex的代码如下：
 ```python
 cursor.execute('CREATE TABLE foo_locks (PRIMARY KEY (lock_id), lock_id INTEGER, acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, token CHAR(5) NOT NULL);')  # prepare schema and table for mutex
 
