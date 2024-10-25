@@ -1,5 +1,5 @@
 # Readme
-A note about Network-Based Locking System.
+A note about Network-Based Locking System (NLS).
 
 ### Network-Based Locking System (NLS)
 
