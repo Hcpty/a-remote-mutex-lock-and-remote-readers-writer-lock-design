@@ -36,6 +36,9 @@ cursor.execute('DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;
 - 使用随机生成的`mark`的目的是防止release了别人acquired的mutex。
 - 不要给mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该先修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
 
+##### Readers-Writer Lock
+当访问共享资源的对象都是写者的时候，使用mutex很方便。而当访问共享资源的对象既有写者又有读者的时候，使用Readers-Writer Lock更高效。
+
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
