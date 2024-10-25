@@ -44,16 +44,13 @@ session.execute(
 r.set('foo_mutexes/123', '1729837899653,wsEy4', nx=True)
 
 # Release Mutex:
-r.eval(
+lua_script = \
   """if redis.call("GET", KEYS[1]) == ARGV[1] then
     return redis.call("DEL", KEYS[1])
   else
     return 0
-  end""",
-  1,
-  'foo_mutexes/123',
-  '1729837899653,wsEy4'
-)
+  end"""
+r.eval(lua_script, 1, 'foo_mutexes/123', '1729837899653,wsEy4')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的代码如下：
