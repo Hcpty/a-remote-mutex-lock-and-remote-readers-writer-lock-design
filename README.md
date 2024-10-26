@@ -91,8 +91,6 @@ cursor.execute(
 )
 ```
 
-注意上面的数据库查询都是非阻塞的，而acquire Mutex操作通常不会一次就成功，所以通常采用轮询的方式。由于过于频繁的查询会增加数据库的开销，所以应该在每次查询之前先等待一小会儿。但是加入等待会让acquire Mutex最终成为一个阻塞操作，而在Event-Driven Programming中不应该进行阻塞函数调用。所以，合理的做法是基于Database开发一个独立的NLS，并通过网络为应用程序提供acquire Mutex和release Mutex的服务。
-
 注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
 注意不要给Mutex设置超时释放，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，因为网络故障而导致锁未被正常释放，应该先修复网络。
