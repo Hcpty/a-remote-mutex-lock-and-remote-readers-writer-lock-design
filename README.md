@@ -9,7 +9,7 @@ A note about Network-Based Locking System (NLS).
 
 当访问共享资源的应用程序都是写者的时候，使用Mutex很方便。
 
-Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现Mutex。
+Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
 
 基于Apache Cassandra实现Mutex的原理如下：
 
