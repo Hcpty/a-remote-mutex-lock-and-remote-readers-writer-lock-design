@@ -14,6 +14,7 @@ A note about Network-Based Locking System (NLS).
 Database有一种特性，即创建unique记录的操作是互斥的，可以利用这种特性来实现Mutex。
 
 基于Apache Cassandra实现Mutex的代码如下：
+
 ```python
 # Prepare schema and table for Mutexes:
 session.execute(
@@ -24,13 +25,17 @@ session.execute(
     acquired_at TIMESTAMP
   );"""
 )
+```
 
+```python
 # Acquire Mutex:
 session.execute(
   'INSERT INTO foo_mutexes (mutex_id, mark, acquired_at) VALUES (%s, %s, toTimestamp(now())) IF NOT EXISTS;',
   [123, 'FSzeY']
 )
+```
 
+```python
 # Release Mutex:
 session.execute(
   'DELETE FROM foo_mutexes WHERE mutex_id=%s AND mark=%s;',
@@ -39,10 +44,13 @@ session.execute(
 ```
 
 基于Redis实现Mutex的代码如下：
+
 ```python
 # Acquire Mutex:
 r.set('foo_mutexes/123', 'wsEy4,1729837899653', nx=True)
+```
 
+```python
 # Release Mutex:
 lua_script = \
   """if redis.call("GET", KEYS[1]) == ARGV[1] then
@@ -54,6 +62,7 @@ r.eval(lua_script, 1, 'foo_mutexes/123', 'wsEy4,1729837899653')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的代码如下：
+
 ```python
 # Prepare schema and table for Mutexes:
 cursor.execute(
@@ -64,13 +73,17 @@ cursor.execute(
     acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   );"""
 )
+```
 
+```python
 # Acquire Mutex:
 cursor.execute(
   'INSERT INTO foo_mutexes (mutex_id, mark) VALUES (:mutex_id, :mark);',
   [123, 'WseAI']
 )
+```
 
+```python
 # Release Mutex:
 cursor.execute(
   'DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;',
