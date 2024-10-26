@@ -128,6 +128,8 @@ session.execute(
 ```python
 ```
 
+基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
+
 ```python
 # Reader acquire Mutex:
 acquire('foobar.mutex_doorman', 123, 'fuvub')
