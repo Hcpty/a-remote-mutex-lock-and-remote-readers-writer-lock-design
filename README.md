@@ -103,7 +103,7 @@ cursor.execute(
 
 在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
-基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)存储Doorman数据结构：
+在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
 session.execute(
   """CREATE TABLE doormans (
@@ -119,7 +119,7 @@ session.execute(
 )
 ```
 
-基于[Redis](https://redis.io/)存储Doorman数据结构：
+在[Redis](https://redis.io/)中存储Doorman数据结构：
 ```python
 doorman = {
   'resource_type': 'foobar',
@@ -137,7 +137,7 @@ doorman = {
 r.json().set('foobar.doorman/123', '$', doorman)
 ```
 
-基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)存储Doorman数据结构：
+在[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)中存储Doorman数据结构：
 ```python
 cursor.execute(
   """CREATE TABLE doormans (
@@ -153,7 +153,7 @@ cursor.execute(
 )
 ```
 
-基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
+Mutex的实现上文已述。基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
 
 ```python
 # Reader acquire Mutex:
