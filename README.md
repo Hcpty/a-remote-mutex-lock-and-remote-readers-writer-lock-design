@@ -201,6 +201,8 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
+可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，而且还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大。
+
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
