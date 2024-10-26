@@ -11,7 +11,7 @@ A note about Network-Based Locking System (NLS).
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
 
-基于Apache Cassandra实现Mutex的原理如下：
+基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
@@ -42,7 +42,7 @@ session.execute(
 )
 ```
 
-基于Redis实现Mutex的原理如下：
+基于[Redis](https://redis.io/)实现Mutex的原理如下：
 
 ```python
 # Acquire Mutex:
@@ -60,7 +60,7 @@ lua_script = \
 r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
 ```
 
-基于Oracle Database或Oracle In-Memory Database实现Mutex的原理如下：
+基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
