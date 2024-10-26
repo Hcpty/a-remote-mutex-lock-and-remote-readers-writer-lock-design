@@ -69,7 +69,7 @@ cursor.execute(
     PRIMARY KEY (resource_type, resource_id),
     resource_type CHAR(25) NOT NULL,
     resource_id INTEGER NOT NULL,
-    mark CHAR(7) NOT NULL,
+    mark CHAR(9) NOT NULL,
     acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   );"""
 )
