@@ -7,7 +7,7 @@ A note about Network-Based Locking System (NLS).
 
 ##### 基于Database实现Mutex
 
-当访问共享资源的应用程序都是写者的时候，使用Mutex很方便。
+当访问共享资源的用户都是写者的时候，使用Mutex很方便。
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
 
@@ -91,11 +91,15 @@ cursor.execute(
 )
 ```
 
-注意上面的数据库查询都是非阻塞的，而Acquire Mutex操作通常不会一次就成功，所以通常采用轮询的方式。由于过于频繁的查询会增加数据库的开销，所以应该在每次查询之前先等待一小会儿。但是加入这种等待会让Acquire Mutex最终成为一个阻塞函数，而在Event-Driven Programming中不应该进行阻塞函数调用。所以，合理的做法是把Mutex封装成一个独立的服务，并通过网络为应用程序提供Acquire Mutex和Release Mutex的服务。
+注意上面的数据库查询都是非阻塞的，而acquire Mutex操作通常不会一次就成功，所以通常采用轮询的方式。由于过于频繁的查询会增加数据库的开销，所以应该在每次查询之前先等待一小会儿。但是加入等待会让acquire Mutex最终成为一个阻塞操作，而在Event-Driven Programming中不应该进行阻塞函数调用。所以，合理的做法是基于Database开发一个独立的NLS，并通过网络为应用程序提供acquire Mutex和release Mutex的服务。
 
-注意附加的两个字段，使用随机生成的`ticket`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
+注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
-注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，如果是因为网络故障而导致锁未被及时释放，应该先修复网络，如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
+注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，如果是因为网络故障而导致锁未被正常释放，应该先修复网络，如果是因为应用程序崩溃而导致锁未被正常释放，应该先修复应用程序。
+
+##### 基于Database实现Readers-Writer Lock
+
+当访问共享资源的用户既有读者又有写者的时候，使用Readers-Writer Lock更高效。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
