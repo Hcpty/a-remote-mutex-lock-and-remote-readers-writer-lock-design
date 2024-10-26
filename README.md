@@ -97,7 +97,7 @@ cursor.execute(
 
 ##### 基于Database实现Readers-Writer Lock
 
-当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock理论上更高效。
+当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock更高效。
 
 在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
