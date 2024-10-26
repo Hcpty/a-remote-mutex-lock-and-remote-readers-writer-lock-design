@@ -18,9 +18,10 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以利
 ```python
 # Prepare schema and table for Mutexes:
 session.execute(
-  """CREATE TABLE foo_mutexes (
-    PRIMARY KEY (mutex_id),
-    mutex_id INT,
+  """CREATE TABLE mutexes (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
     mark VARCHAR,
     acquired_at TIMESTAMP
   );"""
@@ -30,16 +31,16 @@ session.execute(
 ```python
 # Acquire Mutex:
 session.execute(
-  'INSERT INTO foo_mutexes (mutex_id, mark, acquired_at) VALUES (%s, %s, toTimestamp(now())) IF NOT EXISTS;',
-  [123, 'FSzeY']
+  'INSERT INTO mutexes (resource_type, resource_id, mark, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
+  ['foobar', 123, 'FSzeY']
 )
 ```
 
 ```python
 # Release Mutex:
 session.execute(
-  'DELETE FROM foo_mutexes WHERE mutex_id=%s AND mark=%s;',
-  [123, 'FSzeY']
+  'DELETE FROM mutexes WHERE resource_type=%s AND resource_id=%s AND mark=%s;',
+  ['foobar', 123, 'FSzeY']
 )
 ```
 
@@ -47,7 +48,7 @@ session.execute(
 
 ```python
 # Acquire Mutex:
-r.set('foo_mutexes/123', 'wsEy4,1729837899653', nx=True)
+r.set('mutexes/foobar,123', 'wsEy4,1729837899653', nx=True)
 ```
 
 ```python
@@ -58,7 +59,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'foo_mutexes/123', 'wsEy4,1729837899653')
+r.eval(lua_script, 1, 'mutexes/foobar,123', 'wsEy4,1729837899653')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的原理如下：
@@ -66,9 +67,10 @@ r.eval(lua_script, 1, 'foo_mutexes/123', 'wsEy4,1729837899653')
 ```python
 # Prepare schema and table for Mutexes:
 cursor.execute(
-  """CREATE TABLE foo_mutexes (
-    PRIMARY KEY (mutex_id),
-    mutex_id INTEGER NOT NULL,
+  """CREATE TABLE mutexes (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type CHAR(25) NOT NULL,
+    resource_id INTEGER NOT NULL,
     mark CHAR(5) NOT NULL,
     acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   );"""
@@ -78,16 +80,16 @@ cursor.execute(
 ```python
 # Acquire Mutex:
 cursor.execute(
-  'INSERT INTO foo_mutexes (mutex_id, mark) VALUES (:mutex_id, :mark);',
-  [123, 'WseAI']
+  'INSERT INTO mutexes (resource_type, resource_id, mark) VALUES (:resource_type, :resource_id, :mark);',
+  ['foobar', 123, 'WseAI']
 )
 ```
 
 ```python
 # Release Mutex:
 cursor.execute(
-  'DELETE FROM foo_mutexes WHERE mutex_id=:mutex_id AND mark=:mark;',
-  [123, 'WseAI']
+  'DELETE FROM mutexes WHERE resource_type=:resource_type AND resource_id=:resource_id AND mark=:mark;',
+  ['foobar', 123, 'WseAI']
 )
 ```
 
