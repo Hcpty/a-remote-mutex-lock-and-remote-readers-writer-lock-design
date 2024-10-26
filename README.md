@@ -101,11 +101,10 @@ cursor.execute(
 
 当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock有时候更高效。
 
-在实现Readers-Writer Lock的时候，用到了上面已经实现的Mutex，还用到了另外一种数据结构：Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。每一个Mutex都对应一个Doorman，Doorman存储了关于这个Mutex的信息。
+在实现Readers-Writer Lock的时候，用到了上面已经实现的Mutex，还用到了另外一种数据结构：Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)存储Doorman数据结构：
 ```python
-# Prepare schema and table for Doormans:
 session.execute(
   """CREATE TABLE doormans (
     PRIMARY KEY (resource_type, resource_id),
@@ -126,36 +125,48 @@ session.execute(
 
 基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)存储Doorman数据结构：
 ```python
+session.execute(
+  """CREATE TABLE doormans (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type CHAR(36),
+    resource_id INTEGER,
+    active_readers JSON(OBJECT),
+    has_pending_writer BOOLEAN,
+    pending_writer JSON(ARRAY),
+    updated_at TIMESTAMP,
+    created_at TIMESTAMP
+  );"""
+)
 ```
 
 基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
 
 ```python
 # Reader acquire Mutex:
-acquire('foobar.mutex_doorman', 123, 'fuvub')
+acquire('foobar.doorman', 123, 'fuvub')
 doorman = get_or_set_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   if len(doorman['active_readers']) == 0:
     acquire('foobar', 123, 'readers')
   doorman['active_readers']['qyqen'] = int(time.time() * 1000)
   set_doorman('foobar', 123, doorman)
-release('foobar.mutex_doorman', 123, 'fuvub')
+release('foobar.doorman', 123, 'fuvub')
 ```
 
 ```python
 # Reader release Mutex:
-acquire('foobar.mutex_doorman', 123, 'whfxo')
+acquire('foobar.doorman', 123, 'whfxo')
 doorman = get_or_set_doorman('foobar', 123)
 del doorman['active_readers']['qyqen']
 set_doorman('foobar', 123, doorman)
 if len(doorman['active_readers']) == 0:
   release('foobar', 123, 'readers')
-release('foobar.mutex_doorman', 123, 'whfxo')
+release('foobar.doorman', 123, 'whfxo')
 ```
 
 ```python
 # Writer acquire Mutex:
-acquire('foobar.mutex_doorman', 123, 'hcmfm')
+acquire('foobar.doorman', 123, 'hcmfm')
 doorman = get_or_set_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
@@ -163,18 +174,18 @@ if not doorman['has_pending_writer']:
   set_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
   acquire('foobar', 123)
-release('foobar.mutex_doorman', 123, 'hcmfm')
+release('foobar.doorman', 123, 'hcmfm')
 ```
 
 ```python
 # Writer release Mutex:
-acquire('foobar.mutex_doorman', 123, 'kxzsb')
+acquire('foobar.doorman', 123, 'kxzsb')
 release('foobar', 123)
 doorman = get_or_set_doorman('foobar', 123)
 doorman['has_pending_writer'] = False
 doorman['pending_writer'] = (None, None)
 set_doorman('foobar', 123, foobar)
-release('foobar.mutex_doorman', 123, 'kxzsb')
+release('foobar.doorman', 123, 'kxzsb')
 ```
 
 ### Credits
