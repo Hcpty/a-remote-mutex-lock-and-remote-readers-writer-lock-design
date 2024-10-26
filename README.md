@@ -99,7 +99,7 @@ Acquire Mutex的操作是非阻塞函数调用，而且一般不能一次acquire
 
 ##### Readers-Writer Lock
 
-当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock更高效。
+当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock也许更高效。
 
 可以使用类似的方法实现Readers-Writer Lock。
 
