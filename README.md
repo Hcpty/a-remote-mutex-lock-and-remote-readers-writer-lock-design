@@ -67,7 +67,7 @@ r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
 cursor.execute(
   """CREATE TABLE mutexes (
     PRIMARY KEY (resource_type, resource_id),
-    resource_type CHAR(25) NOT NULL,
+    resource_type CHAR(36) NOT NULL,
     resource_id INTEGER NOT NULL,
     ticket CHAR(9) NOT NULL,
     acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
