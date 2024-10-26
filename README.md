@@ -89,8 +89,6 @@ cursor.execute(
 
 注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
-注意不要给Mutex设置超时释放，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。
-
 ### Network-Based Readers-Writer Lock
 
 当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用Network-Based Readers-Writer Lock。
@@ -197,9 +195,9 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
+注意，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
 
-NLS真正的难题在于NLS无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内，因此使用NLS的场景通常对应用程序的编写质量有很高的要求。
+Network-Based Lock真正的难题在于Network-Based Lock无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内，因此使用Network-Based Lock的场景通常对应用程序的编写质量有很高的要求。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
