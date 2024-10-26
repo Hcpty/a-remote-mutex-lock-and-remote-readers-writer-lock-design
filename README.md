@@ -32,7 +32,7 @@ session.execute(
 # Acquire Mutex:
 session.execute(
   'INSERT INTO mutexes (resource_type, resource_id, mark, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
-  ['foobar', 123, 'FSzeY']
+  ['foobar', 123, 'fszey']
 )
 ```
 
@@ -40,7 +40,7 @@ session.execute(
 # Release Mutex:
 session.execute(
   'DELETE FROM mutexes WHERE resource_type=%s AND resource_id=%s AND mark=%s;',
-  ['foobar', 123, 'FSzeY']
+  ['foobar', 123, 'fszey']
 )
 ```
 
@@ -48,7 +48,7 @@ session.execute(
 
 ```python
 # Acquire Mutex:
-r.set('mutexes/foobar,123', 'wsEy4,1729837899653', nx=True)
+r.set('mutexes/foobar,123', 'wsey4,1729837899653', nx=True)
 ```
 
 ```python
@@ -59,7 +59,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'mutexes/foobar,123', 'wsEy4,1729837899653')
+r.eval(lua_script, 1, 'mutexes/foobar,123', 'wsey4,1729837899653')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的原理如下：
@@ -81,7 +81,7 @@ cursor.execute(
 # Acquire Mutex:
 cursor.execute(
   'INSERT INTO mutexes (resource_type, resource_id, mark) VALUES (:resource_type, :resource_id, :mark);',
-  ['foobar', 123, 'WseAI']
+  ['foobar', 123, 'auykg']
 )
 ```
 
@@ -89,7 +89,7 @@ cursor.execute(
 # Release Mutex:
 cursor.execute(
   'DELETE FROM mutexes WHERE resource_type=:resource_type AND resource_id=:resource_id AND mark=:mark;',
-  ['foobar', 123, 'WseAI']
+  ['foobar', 123, 'auykg']
 )
 ```
 
