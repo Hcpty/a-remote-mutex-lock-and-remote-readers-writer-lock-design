@@ -20,7 +20,7 @@ session.execute(
     PRIMARY KEY (resource_type, resource_id),
     resource_type VARCHAR,
     resource_id INT,
-    mark VARCHAR,
+    ticket VARCHAR,
     acquired_at TIMESTAMP
   );"""
 )
@@ -29,7 +29,7 @@ session.execute(
 ```python
 # Acquire Mutex:
 session.execute(
-  'INSERT INTO mutexes (resource_type, resource_id, mark, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
+  'INSERT INTO mutexes (resource_type, resource_id, ticket, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
   ['foobar', 123, 'fszey']
 )
 ```
@@ -37,7 +37,7 @@ session.execute(
 ```python
 # Release Mutex:
 session.execute(
-  'DELETE FROM mutexes WHERE resource_type=%s AND resource_id=%s AND mark=%s;',
+  'DELETE FROM mutexes WHERE resource_type=%s AND resource_id=%s AND ticket=%s;',
   ['foobar', 123, 'fszey']
 )
 ```
@@ -69,7 +69,7 @@ cursor.execute(
     PRIMARY KEY (resource_type, resource_id),
     resource_type CHAR(25) NOT NULL,
     resource_id INTEGER NOT NULL,
-    mark CHAR(9) NOT NULL,
+    ticket CHAR(9) NOT NULL,
     acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   );"""
 )
@@ -78,7 +78,7 @@ cursor.execute(
 ```python
 # Acquire Mutex:
 cursor.execute(
-  'INSERT INTO mutexes (resource_type, resource_id, mark) VALUES (:resource_type, :resource_id, :mark);',
+  'INSERT INTO mutexes (resource_type, resource_id, ticket) VALUES (:resource_type, :resource_id, :ticket);',
   ['foobar', 123, 'auykg']
 )
 ```
@@ -86,14 +86,14 @@ cursor.execute(
 ```python
 # Release Mutex:
 cursor.execute(
-  'DELETE FROM mutexes WHERE resource_type=:resource_type AND resource_id=:resource_id AND mark=:mark;',
+  'DELETE FROM mutexes WHERE resource_type=:resource_type AND resource_id=:resource_id AND ticket=:ticket;',
   ['foobar', 123, 'auykg']
 )
 ```
 
 注意Acquire Mutex的操作是非阻塞函数调用，一次调用一般不能成功地Acquire Mutex，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出机制。
 
-注意附加的两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
+注意附加的两个字段，使用随机生成的`ticket`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
 
 注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，如果是因为网络故障而导致锁未被及时释放，应该先修复网络，如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
 
