@@ -97,7 +97,7 @@ cursor.execute(
 
 ##### 基于Database实现Readers-Writer Lock
 
-当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock有时候更高效。
+当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock理论上更高效。
 
 在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
@@ -201,9 +201,9 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，而且还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大，使用Stored Procedure或Lua Script可以有效地减少这种因多次往返而带来的开销。
+可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大，使用Stored Procedure或Lua Script可以有效地减少这种因多次往返而带来的开销。
 
-Readers-Writer Lock要维持一个活跃读者计数器，但是在现实场景中，总是有读者不能按照约定使用这个计数器，导致共享资源经常被“伪锁定”，可以看到，这种解决方案的用户门槛比较高。
+NLS的真正难题在于NLS无法真正地“授予”锁，同样也无法真正地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内。正是因为这个原因，锁经常由存储共享资源的系统在其内部实现并被隐含地使用。因此，相比Mutex，Readers-Writer Lock出错的概率要大得多，因为每一个时刻Mutex只关联一个写者，而Readers-Writer Lock不仅关联一个写者，还关联一群读者。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
