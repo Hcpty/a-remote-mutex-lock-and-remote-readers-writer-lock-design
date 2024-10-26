@@ -1,17 +1,13 @@
 # Readme
-A note about Network-Based Locking System (NLS).
+A note about Network-Based Locks.
 
-### Network-Based Locking System (NLS)
+### Network-Based Mutex
 
-当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用NLS。
+当位于不同机器上的应用程序并发地写一组共享资源时，需要使用Network-Based Mutex。
 
-##### 基于Database实现Mutex
+Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Network-Based Mutex。
 
-当访问共享资源的应用程序都是写者的时候，使用Mutex很方便。
-
-Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
-
-基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Mutex的原理如下：
+基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Network-Based Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
@@ -95,9 +91,9 @@ cursor.execute(
 
 注意不要给Mutex设置超时释放，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。
 
-##### 基于Database实现Readers-Writer Lock
+### Network-Based Readers-Writer Lock
 
-当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock更高效。
+当位于不同机器上的应用程序并发地写一组共享资源时，需要使用Network-Based Readers-Writer Lock。
 
 在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
