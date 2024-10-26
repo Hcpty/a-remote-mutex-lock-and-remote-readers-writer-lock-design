@@ -135,6 +135,7 @@ doorman = {
   'created_at': 1729932120103
 }
 r.json().set('foobar.doorman/123', '$', doorman)
+r.json().get('foobar.doorman/123', '$')
 ```
 
 在[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)中存储Doorman数据结构：
