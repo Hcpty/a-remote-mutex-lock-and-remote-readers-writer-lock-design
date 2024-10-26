@@ -5,7 +5,7 @@ A note about Network-Based Locking System (NLS).
 
 当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用NLS。
 
-可以基于Database来实现NLS，这种方式not very graceful，but very efficient。
+可以基于database来实现NLS，这种方式not very graceful，but very efficient。
 
 ##### Mutex
 
@@ -93,11 +93,11 @@ cursor.execute(
 )
 ```
 
-注意附加两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
+注意Acquire Mutex的操作是非阻塞函数调用，一般一次调用不能成功，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出重试机制。
 
-不要企图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源。如果是因为网络故障而导致锁未被及时释放，应该先修复网络。如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
+注意附加的两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
 
-Acquire Mutex的操作是非阻塞函数调用，一般不能一次acquire成功，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出重试机制。
+注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，如果是因为网络故障而导致锁未被及时释放，应该先修复网络，如果是因为应用程序崩溃而导致的锁未被正常释放，应该先修复应用程序。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
