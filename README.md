@@ -201,9 +201,9 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大，使用Stored Procedure或Lua Script可以有效地减少这种因多次往返而带来的开销。
+可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次查询的开销是可以通过Stored Procedure或Lua Script来消除的。
 
-NLS的真正难题在于NLS无法真正地“授予”锁，同样也无法真正地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内。正是因为这个原因，锁经常由存储共享资源的系统在其内部实现并被隐含地使用。相比Mutex，Readers-Writer Lock出错的概率要大得多，因为每一个时刻Mutex只关联一个写者，而Readers-Writer Lock不仅关联一个写者，还关联一群读者。因此，NLS最主要的功能是为应用程序提供最基本、最简单的Mutex，而不是其他更加复杂的锁。
+NLS真正的难题在于NLS无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内。正是由于这个原因，锁经常由存储共享资源的系统在其内部实现并被隐含地使用。相比Mutex，Readers-Writer Lock出错的概率要大得多，因为每一个时刻Mutex只关联一个写者，而Readers-Writer Lock不仅关联着一个写者，还关联着一群读者。因此，NLS最主要的功能是为应用程序提供最基本的Mutex，而不是其他更加复杂的锁。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
