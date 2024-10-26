@@ -7,7 +7,7 @@ A note about Network-Based Locking System (NLS).
 
 ##### 基于Database实现Mutex
 
-当访问共享资源的用户都是写者的时候，使用Mutex很方便。
+当访问共享资源的应用程序中都是写者的时候，使用Mutex很方便。
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
 
@@ -99,7 +99,7 @@ cursor.execute(
 
 ##### 基于Database实现Readers-Writer Lock
 
-当访问共享资源的用户既有读者又有写者的时候，使用Readers-Writer Lock更高效。
+当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock更高效。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
