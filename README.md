@@ -93,7 +93,7 @@ cursor.execute(
 
 当位于不同机器上的应用程序并发地读写一组共享资源时，可以使用Network-Based Readers-Writer Lock。
 
-在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
+在实现Network-Based Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
@@ -146,7 +146,7 @@ cursor.execute(
 )
 ```
 
-基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
+基于Mutex和Doorman实现Network-Based Readers-Writer Lock的原理如下：
 
 ```python
 # Reader acquire Mutex:
@@ -195,7 +195,7 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-注意，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
+注意，一次Network-Based Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
 
 Network-Based Lock真正的难题在于Network-Based Lock无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内，因此，使用Network-Based Lock的场景通常对应用程序的编写质量有非常高的要求。
 
