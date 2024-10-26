@@ -38,7 +38,7 @@ session.execute(
 )
 ```
 
-基于[Redis](https://redis.io/)实现Mutex的原理如下：
+基于[Redis](https://redis.io/)实现Network-Based Mutex的原理如下：
 
 ```python
 # Acquire Mutex:
@@ -56,7 +56,7 @@ lua_script = \
 r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
 ```
 
-基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Mutex的原理如下：
+基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Network-Based Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
