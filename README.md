@@ -7,7 +7,7 @@ A note about Network-Based Locking System (NLS).
 
 ##### 基于Database实现Mutex
 
-当访问共享资源的应用程序中都是写者的时候，使用Mutex很方便。
+当访问共享资源的应用程序都是写者的时候，使用Mutex有时候很方便。
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Mutex。
 
@@ -95,11 +95,78 @@ cursor.execute(
 
 注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
-注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，如果是因为网络故障而导致锁未被正常释放，应该先修复网络，如果是因为应用程序崩溃而导致锁未被正常释放，应该先修复应用程序。
+注意不要试图给Mutex设置超时，因为NLS没有有效的手段阻止已经超时的应用程序继续访问对应的共享资源，因为网络故障而导致锁未被正常释放，应该先修复网络。
 
 ##### 基于Database实现Readers-Writer Lock
 
-当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock更高效。
+当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock有时候更高效。
+
+在实现Readers-Writer Lock的时候，用到了上面已经实现的Mutex，还用到了另外一种数据结构：Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。每一个Mutex都对应一个Doorman，Doorman存储了关于这个Mutex的信息。
+
+基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Readers-Writer Lock的原理如下：
+
+```python
+# Prepare schema and table for Doormans:
+session.execute(
+  """CREATE TABLE doormans (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
+    active_readers MAP<VARCHAR, TIMESTAMP>,
+    has_pending_writer BOOLEAN,
+    pending_writer TUPLE<VARCHAR, TIMESTAMP>,
+    updated_at TIMESTAMP,
+    created_at TIMESTAMP
+  );"""
+)
+```
+
+```python
+# Reader acquire Mutex:
+acquire('foobar.mutex_doorman', 123, 'fuvub')
+doorman = get_or_set_doorman('foobar', 123)
+if not doorman['has_pending_writer']:
+  if len(doorman['active_readers']) == 0:
+    acquire('foobar', 123, 'readers')
+  doorman['active_readers']['qyqen'] = int(time.time() * 1000)
+  set_doorman('foobar', 123, doorman)
+release('foobar.mutex_doorman', 123, 'fuvub')
+```
+
+```python
+# Reader release Mutex:
+acquire('foobar.mutex_doorman', 123, 'whfxo')
+doorman = get_or_set_doorman('foobar', 123)
+del doorman['active_readers']['qyqen']
+set_doorman('foobar', 123, doorman)
+if len(doorman['active_readers']) == 0:
+  release('foobar', 123, 'readers')
+release('foobar.mutex_doorman', 123, 'whfxo')
+```
+
+```python
+# Writer acquire Mutex:
+acquire('foobar.mutex_doorman', 123, 'hcmfm')
+doorman = get_or_set_doorman('foobar', 123)
+if not doorman['has_pending_writer']:
+  doorman['has_pending_writer'] = True
+  doorman['pending_writer'] = ('desjn', int(time.time() * 1000))
+  set_doorman('foobar', 123, doorman)
+elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
+  acquire('foobar', 123)
+release('foobar.mutex_doorman', 123, 'hcmfm')
+```
+
+```python
+# Writer release Mutex:
+acquire('foobar.mutex_doorman', 123, 'kxzsb')
+release('foobar', 123)
+doorman = get_or_set_doorman('foobar', 123)
+doorman['has_pending_writer'] = False
+doorman['pending_writer'] = (None, None)
+set_doorman('foobar', 123, foobar)
+release('foobar.mutex_doorman', 123, 'kxzsb')
+```
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
