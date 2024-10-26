@@ -5,7 +5,7 @@ A note about Network-Based Locking System (NLS).
 
 当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用NLS。
 
-##### Mutex
+##### 基于Database实现Mutex
 
 当访问共享资源的应用程序都是写者的时候，使用Mutex很方便。
 
@@ -91,7 +91,7 @@ cursor.execute(
 )
 ```
 
-注意Acquire Mutex的操作是非阻塞函数调用，一次调用一般不能成功地Acquire Mutex，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出机制。
+注意上面的数据库查询都是非阻塞的，而Acquire Mutex操作通常不会一次就成功，所以通常采用轮询的方式。由于过于频繁的查询会增加数据库的开销，所以应该在每次查询之前先等待一小会儿。但是加入这种等待会让Acquire Mutex最终变成一个阻塞函数调用，而在Event-Driven Programming中不适合进行阻塞函数调用。所以合理的做法是把Mutex封装成一个独立的服务，并通过网络为应用程序提供Acquire Mutex和Release Mutex的接口。
 
 注意附加的两个字段，使用随机生成的`ticket`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
 
