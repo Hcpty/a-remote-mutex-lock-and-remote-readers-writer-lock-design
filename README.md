@@ -201,7 +201,7 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，而且还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大。
+可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，而且还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大。使用Stored Procedure或Lua Scripting可以有效地节省这种开销，另外一种方案是[foobarlock](https://github.com/hcpty/foobarlock)。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
