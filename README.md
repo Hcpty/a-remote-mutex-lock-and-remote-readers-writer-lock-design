@@ -125,7 +125,7 @@ session.execute(
 
 基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)存储Doorman数据结构：
 ```python
-session.execute(
+cursor.execute(
   """CREATE TABLE doormans (
     PRIMARY KEY (resource_type, resource_id),
     resource_type CHAR(36),
