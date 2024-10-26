@@ -201,7 +201,7 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次查询的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
+可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
 
 NLS真正的难题在于NLS无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内，因此使用NLS的场景通常对应用程序的编写质量有很高的要求。
 
