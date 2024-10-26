@@ -3,7 +3,7 @@ A note about Network-Based Locks.
 
 ### Network-Based Mutex
 
-当位于不同机器上的应用程序并发地写一组共享资源时，需要使用Network-Based Mutex。
+当位于不同机器上的应用程序并发地写一组共享资源时，可以使用Network-Based Mutex。
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Network-Based Mutex。
 
@@ -91,7 +91,7 @@ cursor.execute(
 
 ### Network-Based Readers-Writer Lock
 
-当位于不同机器上的应用程序并发地读写一组共享资源时，需要使用Network-Based Readers-Writer Lock。
+当位于不同机器上的应用程序并发地读写一组共享资源时，可以使用Network-Based Readers-Writer Lock。
 
 在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
