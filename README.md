@@ -48,7 +48,7 @@ session.execute(
 
 ```python
 # Acquire Mutex:
-r.set('mutexes/foobar,123', 'wsey4,1729837899653', nx=True)
+r.set('mutexes/foobar,123', 'gluww,1729837899653', nx=True)
 ```
 
 ```python
@@ -59,7 +59,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'mutexes/foobar,123', 'wsey4,1729837899653')
+r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
 ```
 
 基于Oracle Database或Oracle In-Memory Database实现Mutex的原理如下：
