@@ -97,12 +97,6 @@ cursor.execute(
 
 Acquire Mutex的操作是非阻塞函数调用，一般不能一次acquire成功，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出重试机制。
 
-##### Readers-Writer Lock
-
-当访问共享资源的应用程序既有写者又有读者的时候，使用Readers-Writer Lock也许更高效。
-
-可以使用类似的方法实现Readers-Writer Lock。
-
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
