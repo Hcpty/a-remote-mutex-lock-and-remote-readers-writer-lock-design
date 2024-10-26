@@ -93,7 +93,7 @@ cursor.execute(
 )
 ```
 
-注意Acquire Mutex的操作是非阻塞函数调用，一次调用一般不能成功Acquire Mutex，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出重试机制。
+注意Acquire Mutex的操作是非阻塞函数调用，一次调用一般不能成功地Acquire Mutex，所以在具体实现的时候，需要增加重试机制、延迟重试机制和退出重试机制。
 
 注意附加的两个字段，使用随机生成的`mark`以防止release了其他写者acquired的Mutex，使用`acquired_at`查找因异常情况导致的长期未释放的Mutex。
 
