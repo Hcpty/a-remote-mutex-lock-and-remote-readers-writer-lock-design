@@ -121,6 +121,21 @@ session.execute(
 
 在[Redis](https://redis.io/)中存储Doorman数据结构：
 ```python
+doorman = {
+  'resource_type': 'foobar',
+  'resource_id': 123,
+  'active_readers': {
+    'afxkv': 1729933228832,
+    'ngyfs': 1729933236560,
+    'pvzas': 1729933241811
+  },
+  'has_pending_writer': True,
+  'pending_writer': ['jqpcq', 1729933260301],
+  'updated_at': 1729933260301,
+  'created_at': 1729932120103
+}
+r.json().set('foobar.doorman/123', '$', doorman)
+r.json().get('foobar.doorman/123', '$')
 ```
 
 在[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)中存储Doorman数据结构：
