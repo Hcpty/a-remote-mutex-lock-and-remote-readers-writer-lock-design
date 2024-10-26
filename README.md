@@ -121,21 +121,6 @@ session.execute(
 
 在[Redis](https://redis.io/)中存储Doorman数据结构：
 ```python
-doorman = {
-  'resource_type': 'foobar',
-  'resource_id': 123,
-  'active_readers': {
-    'afxkv': 1729933228832,
-    'ngyfs': 1729933236560,
-    'pvzas': 1729933241811
-  },
-  'has_pending_writer': True,
-  'pending_writer': ['jqpcq', 1729933260301],
-  'updated_at': 1729933260301,
-  'created_at': 1729932120103
-}
-r.json().set('foobar.doorman/123', '$', doorman)
-r.json().get('foobar.doorman/123', '$')
 ```
 
 在[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)中存储Doorman数据结构：
@@ -188,14 +173,14 @@ if not doorman['has_pending_writer']:
   doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
   set_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
-  acquire('foobar', 123)
+  acquire('foobar', 123, 'zvfwb')
 release('foobar.doorman', 123, 'hcmfm')
 ```
 
 ```python
 # Writer release Mutex:
 acquire('foobar.doorman', 123, 'kxzsb')
-release('foobar', 123)
+release('foobar', 123, 'zvfwb')
 doorman = get_or_set_doorman('foobar', 123)
 doorman['has_pending_writer'] = False
 doorman['pending_writer'] = [None, None]
