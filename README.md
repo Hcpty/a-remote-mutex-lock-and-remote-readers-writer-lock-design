@@ -205,8 +205,6 @@ release('foobar.doorman', 123, 'kxzsb')
 
 Readers-Writer Lock要维持一个活跃读者计数器，但是在现实场景中，总是有读者不能按照约定使用这个计数器，导致共享资源经常被“伪锁定”，这种问题非常难以解决。
 
-Readers-Writer Lock的一种替代方案是[foobarlock](https://github.com/hcpty/foobarlock)。
-
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
