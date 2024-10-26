@@ -203,7 +203,7 @@ release('foobar.doorman', 123, 'kxzsb')
 
 可以看到，一次Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，而且还没有算上因重试而增加的次数，可见使用这种基于Database实现Readers-Writer Lock的开销非常大，使用Stored Procedure或Lua Script可以有效地减少这种因多次往返而带来的开销。
 
-Readers-Writer Lock要维持一个活跃读者计数器，但是在现实场景中，总是有读者不能按照约定使用这个计数器，导致共享资源经常被“伪锁定”，可以看到，这种解决方案对应用程序的编程质量的要求比较高。
+Readers-Writer Lock要维持一个活跃读者计数器，但是在现实场景中，总是有读者不能按照约定使用这个计数器，导致共享资源经常被“伪锁定”，可以看到，这种解决方案的用户门槛比较高。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
