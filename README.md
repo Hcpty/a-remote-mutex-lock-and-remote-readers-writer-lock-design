@@ -101,7 +101,7 @@ cursor.execute(
 
 当访问共享资源的应用程序中既有读者又有写者的时候，使用Readers-Writer Lock有时候更高效。
 
-在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
+在实现Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman，其中Mutex的实现原理上文中已经描述。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
@@ -153,7 +153,7 @@ cursor.execute(
 )
 ```
 
-Mutex的实现上文已述。基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
+基于Mutex和Doorman实现Readers-Writer Lock的原理如下：
 
 ```python
 # Reader acquire Mutex:
