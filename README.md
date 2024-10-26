@@ -170,7 +170,7 @@ acquire('foobar.doorman', 123, 'hcmfm')
 doorman = get_or_set_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
-  doorman['pending_writer'] = ('desjn', int(time.time() * 1000))
+  doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
   set_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
   acquire('foobar', 123)
@@ -183,7 +183,7 @@ acquire('foobar.doorman', 123, 'kxzsb')
 release('foobar', 123)
 doorman = get_or_set_doorman('foobar', 123)
 doorman['has_pending_writer'] = False
-doorman['pending_writer'] = (None, None)
+doorman['pending_writer'] = [None, None]
 set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
