@@ -87,13 +87,19 @@ cursor.execute(
 )
 ```
 
+可以把acquire Mutex和release Mutex的操作封装成统一的接口供应用程序调用，调用示例：
+```python
+acquire('foobar', 123, 'auykg')
+release('foobar', 123, 'auykg')
+```
+
 注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
 ### Remote Readers-Writer Lock
 
 当位于不同机器上的应用程序并发地读写一组位于网络中的共享资源时，可以使用Remote Readers-Writer Lock。
 
-在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
+在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。此外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
