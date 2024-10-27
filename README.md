@@ -7,6 +7,24 @@ A note about Remote Mutex Lock and Remote Readers-Writer Lock.
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Remote Mutex Lock。
 
+基于[Redis](https://redis.io/)实现Remote Mutex Lock的原理如下：
+
+```python
+# Acquire Mutex Lock:
+r.set('mutex_locks/foobar,123', 'gluww,1729837899', nx=True)
+```
+
+```python
+# Release Mutex Lock:
+lua_script = \
+  """if redis.call("GET", KEYS[1]) == ARGV[1] then
+    return redis.call("DEL", KEYS[1])
+  else
+    return 0
+  end"""
+r.eval(lua_script, 1, 'mutex_locks/foobar,123', 'gluww,1729837899')
+```
+
 基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex Lock的原理如下：
 
 ```python
@@ -38,25 +56,7 @@ session.execute(
 )
 ```
 
-基于[Redis](https://redis.io/)实现Remote Mutex Lock的原理如下：
-
-```python
-# Acquire Mutex Lock:
-r.set('mutex_locks/foobar,123', 'gluww,1729837899', nx=True)
-```
-
-```python
-# Release Mutex Lock:
-lua_script = \
-  """if redis.call("GET", KEYS[1]) == ARGV[1] then
-    return redis.call("DEL", KEYS[1])
-  else
-    return 0
-  end"""
-r.eval(lua_script, 1, 'mutex_locks/foobar,123', 'gluww,1729837899')
-```
-
-基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Remote Mutex Lock的原理如下：
+基于[Oracle In-Memory Database](https://www.oracle.com/database/)或[Oracle Database](https://www.oracle.com/database/)实现Remote Mutex Lock的原理如下：
 
 ```python
 # Prepare schema and table for Mutex Locks:
@@ -107,22 +107,6 @@ release_mutex_lock('foobar', 123, 'gluww')
 
 在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex Lock和Doorman。每一个共享资源都对应一个Mutex Lock，要么一群读者共同持有这个Mutex Lock，要么一个写者独立持有这个Mutex Lock。每一个共享资源都对应一个Doorman，用于辅助这个共享资源上的Mutex Lock的获取和释放。
 
-在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
-```python
-session.execute(
-  """CREATE TABLE doormans (
-    PRIMARY KEY (resource_type, resource_id),
-    resource_type VARCHAR,
-    resource_id INT,
-    active_readers MAP<VARCHAR, TIMESTAMP>,
-    has_pending_writer BOOLEAN,
-    pending_writer TUPLE<VARCHAR, TIMESTAMP>,
-    updated_at TIMESTAMP,
-    created_at TIMESTAMP
-  );"""
-)
-```
-
 在[Redis](https://redis.io/)中存储Doorman数据结构：
 ```python
 doorman = {
@@ -142,7 +126,23 @@ r.json().set('foobar.doorman/123', '$', doorman)
 r.json().get('foobar.doorman/123', '$')
 ```
 
-在[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)中存储Doorman数据结构：
+在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
+```python
+session.execute(
+  """CREATE TABLE doormans (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
+    active_readers MAP<VARCHAR, TIMESTAMP>,
+    has_pending_writer BOOLEAN,
+    pending_writer TUPLE<VARCHAR, TIMESTAMP>,
+    updated_at TIMESTAMP,
+    created_at TIMESTAMP
+  );"""
+)
+```
+
+在[Oracle In-Memory Database](https://www.oracle.com/database/)或[Oracle Database](https://www.oracle.com/database/)中存储Doorman数据结构：
 ```python
 cursor.execute(
   """CREATE TABLE doormans (
