@@ -201,9 +201,10 @@ release('foobar.doorman', 123, 'hcmfm')
 acquire('foobar.doorman', 123, 'kxzsb')
 release('foobar', 123, 'desjn')
 doorman = get_or_set_doorman('foobar', 123)
-doorman['has_pending_writer'] = False
-doorman['pending_writer'] = [None, None]
-set_doorman('foobar', 123, foobar)
+if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
+  doorman['has_pending_writer'] = False
+  doorman['pending_writer'] = [None, None]
+  set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
