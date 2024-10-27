@@ -1,18 +1,18 @@
 # Readme
-A note about Remote Mutex and Remote Readers-Writer Lock.
+A note about Remote Mutex Lock and Remote Readers-Writer Lock.
 
-### Remote Mutex
+### Remote Mutex Lock
 
-当位于不同机器上的应用程序并发地写一组位于网络中的共享资源时，可以使用Remote Mutex。
+当位于不同机器上的应用程序并发地写一组位于网络中的共享资源时，可以使用Remote Mutex Lock。
 
-Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Remote Mutex。
+Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Remote Mutex Lock。
 
-基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex的原理如下：
+基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex Lock的原理如下：
 
 ```python
-# Prepare schema and table for Mutexes:
+# Prepare schema and table for Mutex Locks:
 session.execute(
-  """CREATE TABLE mutexes (
+  """CREATE TABLE mutex_locks (
     PRIMARY KEY (resource_type, resource_id),
     resource_type VARCHAR,
     resource_id INT,
@@ -23,45 +23,45 @@ session.execute(
 ```
 
 ```python
-# Acquire Mutex:
+# Acquire Mutex Lock:
 session.execute(
-  'INSERT INTO mutexes (resource_type, resource_id, ticket, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
+  'INSERT INTO mutex_locks (resource_type, resource_id, ticket, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
   ['foobar', 123, 'fszey']
 )
 ```
 
 ```python
-# Release Mutex:
+# Release Mutex Lock:
 session.execute(
-  'DELETE FROM mutexes WHERE resource_type=%s AND resource_id=%s AND ticket=%s;',
+  'DELETE FROM mutex_locks WHERE resource_type=%s AND resource_id=%s AND ticket=%s;',
   ['foobar', 123, 'fszey']
 )
 ```
 
-基于[Redis](https://redis.io/)实现Remote Mutex的原理如下：
+基于[Redis](https://redis.io/)实现Remote Mutex Lock的原理如下：
 
 ```python
-# Acquire Mutex:
-r.set('mutexes/foobar,123', 'gluww,1729837899', nx=True)
+# Acquire Mutex Lock:
+r.set('mutex_locks/foobar,123', 'gluww,1729837899', nx=True)
 ```
 
 ```python
-# Release Mutex:
+# Release Mutex Lock:
 lua_script = \
   """if redis.call("GET", KEYS[1]) == ARGV[1] then
     return redis.call("DEL", KEYS[1])
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899')
+r.eval(lua_script, 1, 'mutex_locks/foobar,123', 'gluww,1729837899')
 ```
 
-基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Remote Mutex的原理如下：
+基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Remote Mutex Lock的原理如下：
 
 ```python
-# Prepare schema and table for Mutexes:
+# Prepare schema and table for Mutex Locks:
 cursor.execute(
-  """CREATE TABLE mutexes (
+  """CREATE TABLE mutex_locks (
     PRIMARY KEY (resource_type, resource_id),
     resource_type CHAR(36) NOT NULL,
     resource_id INTEGER NOT NULL,
@@ -72,40 +72,40 @@ cursor.execute(
 ```
 
 ```python
-# Acquire Mutex:
+# Acquire Mutex Lock:
 cursor.execute(
-  'INSERT INTO mutexes (resource_type, resource_id, ticket) VALUES (:resource_type, :resource_id, :ticket);',
+  'INSERT INTO mutex_locks (resource_type, resource_id, ticket) VALUES (:resource_type, :resource_id, :ticket);',
   ['foobar', 123, 'auykg']
 )
 ```
 
 ```python
-# Release Mutex:
+# Release Mutex Lock:
 cursor.execute(
-  'DELETE FROM mutexes WHERE resource_type=:resource_type AND resource_id=:resource_id AND ticket=:ticket;',
+  'DELETE FROM mutex_locks WHERE resource_type=:resource_type AND resource_id=:resource_id AND ticket=:ticket;',
   ['foobar', 123, 'auykg']
 )
 ```
 
-注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
+注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex Lock，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex Locks。
 
-可以把上面的acquire Mutex和release Mutex的操作封装成统一的接口供应用程序调用，调用示例：
+可以把上面的acquire Mutex Lock和release Mutex Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
 ```python
-# Acquire Mutex
-acquire_mutex('foobar', 123, 'gluww')
+# Acquire Mutex Lock
+acquire_mutex_lock('foobar', 123, 'gluww')
 ```
 
 ```python
-# Release Mutex
-release_mutex('foobar', 123, 'gluww')
+# Release Mutex Lock
+release_mutex_lock('foobar', 123, 'gluww')
 ```
 
 ### Remote Readers-Writer Lock
 
 当位于不同机器上的应用程序并发地读写一组位于网络中的共享资源时，可以使用Remote Readers-Writer Lock。
 
-在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
+在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex Lock和Doorman。每一个共享资源都对应一个Mutex Lock，要么一群读者共同持有这个Mutex Lock，要么一个写者独立持有这个Mutex Lock。每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
@@ -161,51 +161,51 @@ cursor.execute(
 基于Database实现Remote Readers-Writer Lock的原理如下：
 
 ```python
-# Reader acquire Mutex:
-acquire_mutex('foobar.doorman', 123, 'fuvub')
+# Acquire Readers Lock:
+acquire_mutex_lock('foobar.doorman', 123, 'fuvub')
 doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   if len(doorman['active_readers']) == 0:
-    acquire_mutex('foobar', 123, 'readers')
+    acquire_mutex_lock('foobar', 123, 'readers')
   doorman['active_readers']['qyqen'] = int(time.time())
   update_doorman('foobar', 123, doorman)
-release_mutex('foobar.doorman', 123, 'fuvub')
+release_mutex_lock('foobar.doorman', 123, 'fuvub')
 ```
 
 ```python
-# Reader release Mutex:
-acquire_mutex('foobar.doorman', 123, 'whfxo')
+# Release Readers Lock:
+acquire_mutex_lock('foobar.doorman', 123, 'whfxo')
 doorman = read_or_create_doorman('foobar', 123)
 del doorman['active_readers']['qyqen']
 update_doorman('foobar', 123, doorman)
 if len(doorman['active_readers']) == 0:
-  release_mutex('foobar', 123, 'readers')
-release_mutex('foobar.doorman', 123, 'whfxo')
+  release_mutex_lock('foobar', 123, 'readers')
+release_mutex_lock('foobar.doorman', 123, 'whfxo')
 ```
 
 ```python
-# Writer acquire Mutex:
-acquire_mutex('foobar.doorman', 123, 'hcmfm')
+# Acquire Writer Lock:
+acquire_mutex_lock('foobar.doorman', 123, 'hcmfm')
 doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
   doorman['pending_writer'] = ['desjn', int(time.time())]
   update_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
-  acquire_mutex('foobar', 123, 'desjn')
-release_mutex('foobar.doorman', 123, 'hcmfm')
+  acquire_mutex_lock('foobar', 123, 'desjn')
+release_mutex_lock('foobar.doorman', 123, 'hcmfm')
 ```
 
 ```python
-# Writer release Mutex:
-acquire_mutex('foobar.doorman', 123, 'kxzsb')
-release_mutex('foobar', 123, 'desjn')
+# Release Writer Lock:
+acquire_mutex_lock('foobar.doorman', 123, 'kxzsb')
+release_mutex_lock('foobar', 123, 'desjn')
 doorman = read_or_create_doorman('foobar', 123)
 if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
   doorman['has_pending_writer'] = False
   doorman['pending_writer'] = ['', 0]
   update_doorman('foobar', 123, foobar)
-release_mutex('foobar.doorman', 123, 'kxzsb')
+release_mutex_lock('foobar.doorman', 123, 'kxzsb')
 ```
 
 注意*active_readers*字段记录了读者acquire Mutex的时间戳，其用途和Mutex中的*acquired_at*字段相同。
