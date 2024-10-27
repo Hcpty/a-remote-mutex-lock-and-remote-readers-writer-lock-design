@@ -1,13 +1,13 @@
 # Readme
-A note about Network-Based Locks.
+A note about Remote Locks.
 
-### Network-Based Mutex
+### Remote Mutex
 
-当位于不同机器上的应用程序并发地写一组共享资源时，可以使用Network-Based Mutex。
+当位于不同机器上的应用程序并发地写一组共享资源时，可以使用Remote Mutex。
 
-Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Network-Based Mutex。
+Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Remote Mutex。
 
-基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Network-Based Mutex的原理如下：
+基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
@@ -38,7 +38,7 @@ session.execute(
 )
 ```
 
-基于[Redis](https://redis.io/)实现Network-Based Mutex的原理如下：
+基于[Redis](https://redis.io/)实现Remote Mutex的原理如下：
 
 ```python
 # Acquire Mutex:
@@ -56,7 +56,7 @@ lua_script = \
 r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
 ```
 
-基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Network-Based Mutex的原理如下：
+基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Remote Mutex的原理如下：
 
 ```python
 # Prepare schema and table for Mutexes:
@@ -89,11 +89,11 @@ cursor.execute(
 
 注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
-### Network-Based Readers-Writer Lock
+### Remote Readers-Writer Lock
 
-当位于不同机器上的应用程序并发地读写一组共享资源时，可以使用Network-Based Readers-Writer Lock。
+当位于不同机器上的应用程序并发地读写一组共享资源时，可以使用Remote Readers-Writer Lock。
 
-在实现Network-Based Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
+在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex和Doorman。每一个共享资源都对应一个Mutex，要么一群读者共同持有这个Mutex，要么一个写者独立持有这个Mutex。另外，每一个共享资源都对应一个Doorman，用于辅助Mutex的获取和释放。
 
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
@@ -146,7 +146,7 @@ cursor.execute(
 )
 ```
 
-基于Mutex和Doorman实现Network-Based Readers-Writer Lock的原理如下：
+基于Database实现Remote Readers-Writer Lock的原理如下：
 
 ```python
 # Reader acquire Mutex:
@@ -195,9 +195,7 @@ set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-注意，一次Network-Based Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
-
-Network-Based Lock真正的难题在于Network-Based Lock无法真实地“授予”锁，也无法真实地“收回”锁，这种“授予”和“收回”都是虚拟的，因为锁对应的共享资源并不在自己的控制范围之内，因此，使用Network-Based Lock的场景通常对应用程序的编写质量有非常高的要求。
+注意，一次Remote Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
