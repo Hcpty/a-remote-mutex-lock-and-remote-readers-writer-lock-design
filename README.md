@@ -87,7 +87,7 @@ cursor.execute(
 )
 ```
 
-注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex Lock，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex Locks。
+注意附加的两个字段，使用随机生成的**ticket**以防止release了其他写者acquired的Mutex Lock，使用**acquired_at**查找因异常情况导致的长期未释放的Mutex Locks。
 
 可以把上面的acquire Mutex Lock和release Mutex Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
@@ -209,7 +209,7 @@ if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
 release_mutex_lock('foobar.doorman', 123, 'kxzsb')
 ```
 
-注意*active_readers*字段记录了读者acquire Mutex Lock的时间戳，其用途和Mutex Lock中的*acquired_at*字段相同。
+注意**active_readers**字段记录了读者acquire Mutex Lock的时间戳，其用途和Mutex Lock中的**acquired_at**字段相同。
 
 可以把上面的acquire Readers-Writer Lock和release Readers-Writer Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
