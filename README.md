@@ -209,7 +209,7 @@ if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
 release_mutex_lock('foobar.doorman', 123, 'kxzsb')
 ```
 
-注意**pending_writer**字段和**active_readers**字段记录了写者和读者acquire Mutex Lock的时间戳，其用途和Mutex Lock中的**acquired_at**字段相同。
+注意**pending_writer**字段和**active_readers**字段记录了写者和读者apply或acquire Mutex Lock的时间戳，其用途和Mutex Lock中的**acquired_at**字段相同。
 
 可以把上面的acquire Readers-Writer Lock和release Readers-Writer Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
