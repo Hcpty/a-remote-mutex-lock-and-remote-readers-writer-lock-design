@@ -203,7 +203,7 @@ release('foobar', 123, 'desjn')
 doorman = get_or_set_doorman('foobar', 123)
 if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
   doorman['has_pending_writer'] = False
-  doorman['pending_writer'] = [None, None]
+  doorman['pending_writer'] = ['', 0]
   set_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
