@@ -214,22 +214,22 @@ release_mutex('foobar.doorman', 123, 'kxzsb')
 
 ```python
 # Acquire Readers Lock:
-acquire_readers_lock('foobar', 123, 'fuvub', 'qyqen')
+acquire_readers_lock('foobar', 123, 'qyqen')
 ```
 
 ```python
 # Release Readers Lock:
-release_readers_lock('foobar', 123, 'whfxo', 'qyqen')
+release_readers_lock('foobar', 123, 'qyqen')
 ```
 
 ```python
 # Acquire Writer Lock:
-acquire_writer_lock('foobar', 123, 'hcmfm', 'desjn')
+acquire_writer_lock('foobar', 123, 'desjn')
 ```
 
 ```python
 # Release Writer Lock:
-release_writer_lock('foobar', 123, 'kxzsb', 'desjn')
+release_writer_lock('foobar', 123, 'desjn')
 ```
 
 ### Credits
