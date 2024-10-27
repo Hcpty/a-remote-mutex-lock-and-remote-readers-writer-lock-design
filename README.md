@@ -93,12 +93,12 @@ cursor.execute(
 
 ```python
 # Acquire Mutex
-acquire_mutex('foobar', 123, 'fszey')
+acquire_mutex('foobar', 123, 'gluww')
 ```
 
 ```python
 # Release Mutex
-release_mutex('foobar', 123, 'fszey')
+release_mutex('foobar', 123, 'gluww')
 ```
 
 ### Remote Readers-Writer Lock
