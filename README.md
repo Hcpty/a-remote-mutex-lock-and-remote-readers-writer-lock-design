@@ -176,8 +176,9 @@ release_mutex_lock('foobar.doorman', 123, 'fuvub')
 # Release Readers Lock:
 acquire_mutex_lock('foobar.doorman', 123, 'whfxo')
 doorman = read_or_create_doorman('foobar', 123)
-del doorman['active_readers']['qyqen']
-update_doorman('foobar', 123, doorman)
+if 'qyqen' in doorman['active_readers']:
+  del doorman['active_readers']['qyqen']
+  update_doorman('foobar', 123, doorman)
 if len(doorman['active_readers']) == 0:
   release_mutex_lock('foobar', 123, 'readers')
 release_mutex_lock('foobar.doorman', 123, 'whfxo')
