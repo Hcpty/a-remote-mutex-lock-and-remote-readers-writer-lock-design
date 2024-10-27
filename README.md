@@ -87,19 +87,19 @@ cursor.execute(
 )
 ```
 
+注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
+
 可以把acquire Mutex和release Mutex的操作封装成统一的接口供应用程序调用，调用示例：
 
 ```python
 # Acquire Mutex
-acquire('foobar', 123, 'auykg')
+acquire('foobar', 123, 'fszey')
 ```
 
 ```python
 # Release Mutex
-release('foobar', 123, 'auykg')
+release('foobar', 123, 'fszey')
 ```
-
-注意附加的两个字段，使用随机生成的*ticket*以防止release了其他写者acquired的Mutex，使用*acquired_at*查找因异常情况导致的长期未释放的Mutex。
 
 ### Remote Readers-Writer Lock
 
@@ -192,14 +192,14 @@ if not doorman['has_pending_writer']:
   doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
   set_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
-  acquire('foobar', 123, 'zvfwb')
+  acquire('foobar', 123, 'desjn')
 release('foobar.doorman', 123, 'hcmfm')
 ```
 
 ```python
 # Writer release Mutex:
 acquire('foobar.doorman', 123, 'kxzsb')
-release('foobar', 123, 'zvfwb')
+release('foobar', 123, 'desjn')
 doorman = get_or_set_doorman('foobar', 123)
 doorman['has_pending_writer'] = False
 doorman['pending_writer'] = [None, None]
@@ -208,6 +208,28 @@ release('foobar.doorman', 123, 'kxzsb')
 ```
 
 注意，一次Remote Readers-Writer Lock的使用，从获取到释放，至少要经历十数次数据库查询，这还没有算上因重试而增加的次数，但是这种多次往返的开销可以通过使用Stored Procedure或Lua Script的方式来消除。
+
+可以把acquire Readers-Writer Lock和release Readers-Writer Lock的操作封装成统一的接口供应用程序调用，调用示例：
+
+```python
+# Acquire Readers Lock:
+acquire_readers_lock('foobar', 123, 'fuvub', 'qyqen')
+```
+
+```python
+# Release Readers Lock:
+relase_readers_lock('foobar', 123, 'whfxo', 'qyqen')
+```
+
+```python
+# Acquire Writer Lock:
+acquire_writer_lock('foobar', 123, 'hcmfm', 'desjn')
+```
+
+```python
+# Release Writer Lock:
+relase_writer_lock('foobar', 123, 'kxzsb', 'desjn')
+```
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
