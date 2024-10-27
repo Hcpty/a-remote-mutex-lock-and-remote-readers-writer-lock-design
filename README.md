@@ -93,12 +93,12 @@ cursor.execute(
 
 ```python
 # Acquire Mutex
-acquire('foobar', 123, 'fszey')
+acquire_mutex('foobar', 123, 'fszey')
 ```
 
 ```python
 # Release Mutex
-release('foobar', 123, 'fszey')
+release_mutex('foobar', 123, 'fszey')
 ```
 
 ### Remote Readers-Writer Lock
@@ -162,50 +162,50 @@ cursor.execute(
 
 ```python
 # Reader acquire Mutex:
-acquire('foobar.doorman', 123, 'fuvub')
+acquire_mutex('foobar.doorman', 123, 'fuvub')
 doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   if len(doorman['active_readers']) == 0:
-    acquire('foobar', 123, 'readers')
+    acquire_mutex('foobar', 123, 'readers')
   doorman['active_readers']['qyqen'] = int(time.time() * 1000)
   update_doorman('foobar', 123, doorman)
-release('foobar.doorman', 123, 'fuvub')
+release_mutex('foobar.doorman', 123, 'fuvub')
 ```
 
 ```python
 # Reader release Mutex:
-acquire('foobar.doorman', 123, 'whfxo')
+acquire_mutex('foobar.doorman', 123, 'whfxo')
 doorman = read_or_create_doorman('foobar', 123)
 del doorman['active_readers']['qyqen']
 update_doorman('foobar', 123, doorman)
 if len(doorman['active_readers']) == 0:
-  release('foobar', 123, 'readers')
-release('foobar.doorman', 123, 'whfxo')
+  release_mutex('foobar', 123, 'readers')
+release_mutex('foobar.doorman', 123, 'whfxo')
 ```
 
 ```python
 # Writer acquire Mutex:
-acquire('foobar.doorman', 123, 'hcmfm')
+acquire_mutex('foobar.doorman', 123, 'hcmfm')
 doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
   doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
   update_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
-  acquire('foobar', 123, 'desjn')
-release('foobar.doorman', 123, 'hcmfm')
+  acquire_mutex('foobar', 123, 'desjn')
+release_mutex('foobar.doorman', 123, 'hcmfm')
 ```
 
 ```python
 # Writer release Mutex:
-acquire('foobar.doorman', 123, 'kxzsb')
-release('foobar', 123, 'desjn')
+acquire_mutex('foobar.doorman', 123, 'kxzsb')
+release_mutex('foobar', 123, 'desjn')
 doorman = read_or_create_doorman('foobar', 123)
 if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
   doorman['has_pending_writer'] = False
   doorman['pending_writer'] = ['', 0]
   update_doorman('foobar', 123, foobar)
-release('foobar.doorman', 123, 'kxzsb')
+release_mutex('foobar.doorman', 123, 'kxzsb')
 ```
 
 注意*active_readers*字段记录了读者acquire Mutex的时间戳，其用途和Mutex中的*acquired_at*字段相同。
