@@ -167,7 +167,7 @@ doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   if len(doorman['active_readers']) == 0:
     acquire_mutex('foobar', 123, 'readers')
-  doorman['active_readers']['qyqen'] = int(time.time() * 1000)
+  doorman['active_readers']['qyqen'] = int(time.time())
   update_doorman('foobar', 123, doorman)
 release_mutex('foobar.doorman', 123, 'fuvub')
 ```
@@ -189,7 +189,7 @@ acquire_mutex('foobar.doorman', 123, 'hcmfm')
 doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
-  doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
+  doorman['pending_writer'] = ['desjn', int(time.time())]
   update_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
   acquire_mutex('foobar', 123, 'desjn')
