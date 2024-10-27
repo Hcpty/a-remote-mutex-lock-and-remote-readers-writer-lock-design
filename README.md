@@ -208,7 +208,7 @@ if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
-注意*active_readers*字段记录了读者acquire Mutex的时间戳，其用途和Mutex中的*acquired_at*字段相同，都是用于查找因异常情况导致的长期未释放的Mutex。
+注意*active_readers*字段记录了读者acquire Mutex的时间戳，其用途和Mutex中的*acquired_at*字段相同。
 
 可以把上面的acquire Readers-Writer Lock和release Readers-Writer Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
