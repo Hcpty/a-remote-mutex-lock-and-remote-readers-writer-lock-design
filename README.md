@@ -163,21 +163,21 @@ cursor.execute(
 ```python
 # Reader acquire Mutex:
 acquire('foobar.doorman', 123, 'fuvub')
-doorman = get_or_set_doorman('foobar', 123)
+doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   if len(doorman['active_readers']) == 0:
     acquire('foobar', 123, 'readers')
   doorman['active_readers']['qyqen'] = int(time.time() * 1000)
-  set_doorman('foobar', 123, doorman)
+  update_doorman('foobar', 123, doorman)
 release('foobar.doorman', 123, 'fuvub')
 ```
 
 ```python
 # Reader release Mutex:
 acquire('foobar.doorman', 123, 'whfxo')
-doorman = get_or_set_doorman('foobar', 123)
+doorman = read_or_create_doorman('foobar', 123)
 del doorman['active_readers']['qyqen']
-set_doorman('foobar', 123, doorman)
+update_doorman('foobar', 123, doorman)
 if len(doorman['active_readers']) == 0:
   release('foobar', 123, 'readers')
 release('foobar.doorman', 123, 'whfxo')
@@ -186,11 +186,11 @@ release('foobar.doorman', 123, 'whfxo')
 ```python
 # Writer acquire Mutex:
 acquire('foobar.doorman', 123, 'hcmfm')
-doorman = get_or_set_doorman('foobar', 123)
+doorman = read_or_create_doorman('foobar', 123)
 if not doorman['has_pending_writer']:
   doorman['has_pending_writer'] = True
   doorman['pending_writer'] = ['desjn', int(time.time() * 1000)]
-  set_doorman('foobar', 123, doorman)
+  update_doorman('foobar', 123, doorman)
 elif doorman['pending_writer'][0] == 'desjn' and len(doorman['active_readers']) == 0:
   acquire('foobar', 123, 'desjn')
 release('foobar.doorman', 123, 'hcmfm')
@@ -200,11 +200,11 @@ release('foobar.doorman', 123, 'hcmfm')
 # Writer release Mutex:
 acquire('foobar.doorman', 123, 'kxzsb')
 release('foobar', 123, 'desjn')
-doorman = get_or_set_doorman('foobar', 123)
+doorman = read_or_create_doorman('foobar', 123)
 if doorman['has_pending_writer'] and doorman['pending_writer'][0] == 'desjn':
   doorman['has_pending_writer'] = False
   doorman['pending_writer'] = ['', 0]
-  set_doorman('foobar', 123, foobar)
+  update_doorman('foobar', 123, foobar)
 release('foobar.doorman', 123, 'kxzsb')
 ```
 
