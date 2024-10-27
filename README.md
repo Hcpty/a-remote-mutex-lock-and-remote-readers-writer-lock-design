@@ -42,7 +42,7 @@ session.execute(
 
 ```python
 # Acquire Mutex:
-r.set('mutexes/foobar,123', 'gluww,1729837899653', nx=True)
+r.set('mutexes/foobar,123', 'gluww,1729837899', nx=True)
 ```
 
 ```python
@@ -53,7 +53,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899653')
+r.eval(lua_script, 1, 'mutexes/foobar,123', 'gluww,1729837899')
 ```
 
 基于[Oracle Database](https://www.oracle.com/database/)或[Oracle In-Memory Database](https://www.oracle.com/database/)实现Remote Mutex的原理如下：
@@ -129,14 +129,14 @@ doorman = {
   'resource_type': 'foobar',
   'resource_id': 123,
   'active_readers': {
-    'afxkv': 1729933228832,
-    'ngyfs': 1729933236560,
-    'pvzas': 1729933241811
+    'afxkv': 1729933228,
+    'ngyfs': 1729933236,
+    'pvzas': 1729933241
   },
   'has_pending_writer': True,
-  'pending_writer': ['jqpcq', 1729933260301],
-  'updated_at': 1729933260301,
-  'created_at': 1729932120103
+  'pending_writer': ['jqpcq', 1729933260],
+  'updated_at': 1729933260,
+  'created_at': 1729932120
 }
 r.json().set('foobar.doorman/123', '$', doorman)
 r.json().get('foobar.doorman/123', '$')
