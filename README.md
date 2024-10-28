@@ -11,7 +11,7 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以基
 
 ```python
 # Acquire Mutex Lock:
-r.set('mutex_locks/foobar&123', 'gluww|1729837899', nx=True)
+r.set('mutex_locks/foobar&123', 'gluww,1729837899', nx=True)
 ```
 
 ```python
@@ -22,7 +22,7 @@ lua_script = \
   else
     return 0
   end"""
-r.eval(lua_script, 1, 'mutex_locks/foobar&123', 'gluww|1729837899')
+r.eval(lua_script, 1, 'mutex_locks/foobar&123', 'gluww,1729837899')
 ```
 
 基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex Lock的原理如下：
