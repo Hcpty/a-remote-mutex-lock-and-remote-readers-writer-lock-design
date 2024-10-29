@@ -25,6 +25,37 @@ lua_script = \
 r.eval(lua_script, 1, 'mutex_locks/foobar&123', 'gluww&1729837899')
 ```
 
+基于[Oracle Database](https://www.oracle.com/database/)实现Remote Mutex Lock的原理如下：
+
+```python
+# Prepare schema and table for Mutex Locks:
+cursor.execute(
+  """CREATE TABLE mutex_locks (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type CHAR(36) NOT NULL,
+    resource_id INTEGER NOT NULL,
+    ticket CHAR(9) NOT NULL,
+    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  );"""
+)
+```
+
+```python
+# Acquire Mutex Lock:
+cursor.execute(
+  'INSERT INTO mutex_locks (resource_type, resource_id, ticket) VALUES (:resource_type, :resource_id, :ticket);',
+  ['foobar', 123, 'auykg']
+)
+```
+
+```python
+# Release Mutex Lock:
+cursor.execute(
+  'DELETE FROM mutex_locks WHERE resource_type=:resource_type AND resource_id=:resource_id AND ticket=:ticket;',
+  ['foobar', 123, 'auykg']
+)
+```
+
 基于[Apache Cassandra](https://cassandra.apache.org/_/index.html)实现Remote Mutex Lock的原理如下：
 
 ```python
@@ -53,37 +84,6 @@ session.execute(
 session.execute(
   'DELETE FROM mutex_locks WHERE resource_type=%s AND resource_id=%s AND ticket=%s;',
   ['foobar', 123, 'fszey']
-)
-```
-
-基于[Oracle In-Memory Database](https://www.oracle.com/database/)或[Oracle Database](https://www.oracle.com/database/)实现Remote Mutex Lock的原理如下：
-
-```python
-# Prepare schema and table for Mutex Locks:
-cursor.execute(
-  """CREATE TABLE mutex_locks (
-    PRIMARY KEY (resource_type, resource_id),
-    resource_type CHAR(36) NOT NULL,
-    resource_id INTEGER NOT NULL,
-    ticket CHAR(9) NOT NULL,
-    acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-  );"""
-)
-```
-
-```python
-# Acquire Mutex Lock:
-cursor.execute(
-  'INSERT INTO mutex_locks (resource_type, resource_id, ticket) VALUES (:resource_type, :resource_id, :ticket);',
-  ['foobar', 123, 'auykg']
-)
-```
-
-```python
-# Release Mutex Lock:
-cursor.execute(
-  'DELETE FROM mutex_locks WHERE resource_type=:resource_type AND resource_id=:resource_id AND ticket=:ticket;',
-  ['foobar', 123, 'auykg']
 )
 ```
 
@@ -126,6 +126,22 @@ r.json().set('foobar.doorman/123', '$', doorman)
 r.json().get('foobar.doorman/123', '$')
 ```
 
+在[Oracle Database](https://www.oracle.com/database/)中存储Doorman数据结构：
+```python
+cursor.execute(
+  """CREATE TABLE doormans (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type CHAR(36),
+    resource_id INTEGER,
+    active_readers JSON(OBJECT),
+    has_pending_writer BOOLEAN,
+    pending_writer JSON(ARRAY),
+    updated_at TIMESTAMP,
+    created_at TIMESTAMP
+  );"""
+)
+```
+
 在[Apache Cassandra](https://cassandra.apache.org/_/index.html)中存储Doorman数据结构：
 ```python
 session.execute(
@@ -136,22 +152,6 @@ session.execute(
     active_readers MAP<VARCHAR, TIMESTAMP>,
     has_pending_writer BOOLEAN,
     pending_writer TUPLE<VARCHAR, TIMESTAMP>,
-    updated_at TIMESTAMP,
-    created_at TIMESTAMP
-  );"""
-)
-```
-
-在[Oracle In-Memory Database](https://www.oracle.com/database/)或[Oracle Database](https://www.oracle.com/database/)中存储Doorman数据结构：
-```python
-cursor.execute(
-  """CREATE TABLE doormans (
-    PRIMARY KEY (resource_type, resource_id),
-    resource_type CHAR(36),
-    resource_id INTEGER,
-    active_readers JSON(OBJECT),
-    has_pending_writer BOOLEAN,
-    pending_writer JSON(ARRAY),
     updated_at TIMESTAMP,
     created_at TIMESTAMP
   );"""
@@ -237,6 +237,6 @@ release_writer_lock('foobar', 123, 'desjn')
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem)
 - [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
-- [INSERT IF NOT EXISTS - Apache Cassandra](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/dml.html#insert-statement) and [datastax/python-driver - GitHub](https://github.com/datastax/python-driver)
 - [SET NX - Redis](https://redis.io/docs/latest/commands/set/) and [redis/redis-py - GitHub](https://github.com/redis/redis-py)
 - [PRIMARY KEY - Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/constraint.html) and [oracle/python-oracledb - GitHub](https://github.com/oracle/python-oracledb/)
+- [INSERT IF NOT EXISTS - Apache Cassandra](https://cassandra.apache.org/doc/latest/cassandra/developing/cql/dml.html#insert-statement) and [datastax/python-driver - GitHub](https://github.com/datastax/python-driver)
