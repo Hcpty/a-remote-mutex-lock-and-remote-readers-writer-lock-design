@@ -25,7 +25,7 @@ lua_script = \
 r.eval(lua_script, 1, 'mutex_locks/foobar&123', 'gluww&1729837899')
 ```
 
-注意附加的两个字段，gluww代表**ticket**字段，1729837899代表**required_at**字段，使用随机生成的**ticket**以防止release了其他写者acquired的Mutex Lock，使用**acquired_at**查找因异常情况导致的长期未释放的Mutex Locks。
+注意附加的两个字段，"gluww"是**ticket**字段的值，1729837899是**required_at**字段的值，使用随机生成的**ticket**以防止release了其他写者acquired的Mutex Lock，使用**acquired_at**查找因异常情况导致的长期未释放的Mutex Locks。
 
 可以把上面的acquire Mutex Lock和release Mutex Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
