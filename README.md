@@ -120,13 +120,13 @@ release_mutex_lock('foobar.doorman', 123, 'kxzsb')
 可以把上面的acquire Readers-Writer Lock和release Readers-Writer Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
 ```python
-# Acquire Reader Lock:
-acquire_reader_lock('foobar', 123, 'qyqen')
+# Acquire Readers Lock:
+acquire_readers_lock('foobar', 123, 'qyqen')
 ```
 
 ```python
-# Release Reader Lock:
-release_reader_lock('foobar', 123, 'qyqen')
+# Release Readers Lock:
+release_readers_lock('foobar', 123, 'qyqen')
 ```
 
 ```python
