@@ -1,5 +1,5 @@
 # Readme
-A note about Remote Mutex Lock and Remote Readers-Writer Lock.
+A Remote Mutex Lock and Remote Readers-Writer Lock design.
 
 ### Remote Mutex Lock
 
