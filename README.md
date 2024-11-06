@@ -7,25 +7,38 @@ A Remote Mutex Lock and Remote Readers-Writer Lock design.
 
 Database有一种特性，即创建unique记录的操作是互斥的，可以基于这种特性来实现Remote Mutex Lock。
 
-基于[Redis](https://redis.io/)实现Remote Mutex Lock的原理如下：
+基于[Apache Cassandra](https://cassandra.apache.org/)实现Remote Mutex Lock的原理如下：
+
+```python
+# Prepare schema and table for Mutex Locks:
+session.execute(
+  """CREATE TABLE mutex_locks (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
+    ticket VARCHAR,
+    acquired_at TIMESTAMP
+  );"""
+)
+```
 
 ```python
 # Acquire Mutex Lock:
-r.set('mutex_locks/foobar&123', 'gluww&1729837899', nx=True)
+session.execute(
+  'INSERT INTO mutex_locks (resource_type, resource_id, ticket, acquired_at) VALUES (%s, %s, %s, toTimestamp(now())) IF NOT EXISTS;',
+  ['foobar', 123, 'fszey']
+)
 ```
 
 ```python
 # Release Mutex Lock:
-lua_script = \
-  """if redis.call("GET", KEYS[1]) == ARGV[1] then
-    return redis.call("DEL", KEYS[1])
-  else
-    return 0
-  end"""
-r.eval(lua_script, 1, 'mutex_locks/foobar&123', 'gluww&1729837899')
+session.execute(
+  'DELETE FROM mutex_locks WHERE resource_type=%s AND resource_id=%s AND ticket=%s;',
+  ['foobar', 123, 'fszey']
+)
 ```
 
-注意附加的两个字段，"gluww"是**ticket**字段的值，1729837899是**required_at**字段的值，使用随机生成的**ticket**以防止release了其他写者acquired的Mutex Lock，使用**acquired_at**查找因异常情况导致的长期未释放的Mutex Locks。
+注意附加的两个字段，使用随机生成的**ticket**以防止release了其他写者acquired的Mutex Lock，使用**acquired_at**查找因异常情况导致的长期未释放的Mutex Locks。
 
 可以把上面的acquire Mutex Lock和release Mutex Lock的操作封装成统一的接口供应用程序调用，调用示例：
 
@@ -45,26 +58,36 @@ release_mutex_lock('foobar', 123, 'gluww')
 
 在实现Remote Readers-Writer Lock的时候用到了两种数据结构：Mutex Lock和Doorman。每一个共享资源都对应一个Mutex Lock，要么一群读者共同持有这个Mutex Lock，要么一个写者独立持有这个Mutex Lock。每一个共享资源都对应一个Doorman，用于辅助这个共享资源上的Mutex Lock的获取和释放。
 
-在[Redis](https://redis.io/)中存储Doorman数据结构：
+基于[Apache Cassandra](https://cassandra.apache.org/)实现Remote Readers-Writer Lock的原理如下：
+
 ```python
-doorman = {
-  'resource_type': 'foobar',
-  'resource_id': 123,
-  'active_readers': {
-    'afxkv': 1729933228,
-    'ngyfs': 1729933236,
-    'pvzas': 1729933241
-  },
-  'has_pending_writer': True,
-  'pending_writer': ['jqpcq', 1729933260],
-  'updated_at': 1729933260,
-  'created_at': 1729932120
-}
-r.json().set('foobar.doorman/123', '$', doorman)
-r.json().get('foobar.doorman/123', '$')
+# Prepare schema and table for Mutex Locks:
+session.execute(
+  """CREATE TABLE mutex_locks (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
+    ticket VARCHAR,
+    acquired_at TIMESTAMP
+  );"""
+)
 ```
 
-基于Database实现Remote Readers-Writer Lock的原理如下：
+```python
+# Prepare schema and table for Doorman:
+session.execute(
+  """CREATE TABLE doormans (
+    PRIMARY KEY (resource_type, resource_id),
+    resource_type VARCHAR,
+    resource_id INT,
+    active_readers MAP<VARCHAR, TIMESTAMP>,
+    has_pending_writer BOOLEAN,
+    pending_writer TUPLE<VARCHAR, TIMESTAMP>,
+    updated_at TIMESTAMP,
+    created_at TIMESTAMP
+  );"""
+)
+```
 
 ```python
 # Acquire Readers Lock:
