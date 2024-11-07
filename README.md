@@ -44,12 +44,12 @@ session.execute(
 
 ```python
 # Acquire Mutex Lock
-acquire_mutex_lock('foobar', 123, 'gluww')
+acquire_mutex_lock('foobar', 123, 'fszey')
 ```
 
 ```python
 # Release Mutex Lock
-release_mutex_lock('foobar', 123, 'gluww')
+release_mutex_lock('foobar', 123, 'fszey')
 ```
 
 ### Remote Readers-Writer Lock
