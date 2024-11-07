@@ -74,7 +74,7 @@ session.execute(
 ```
 
 ```python
-# Prepare schema and table for Doorman:
+# Prepare schema and table for Doormen:
 session.execute(
   """CREATE TABLE doormans (
     PRIMARY KEY (resource_type, resource_id),
