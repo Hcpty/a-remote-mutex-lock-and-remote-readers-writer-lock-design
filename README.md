@@ -165,4 +165,4 @@ release_writer_lock('foobar', 123, 'desjn')
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
 - [Readers–writers problem - Wikipedia](https://en.wikipedia.org/wiki/Readers-writers_problem) and [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
-- [SET NX - Redis](https://redis.io/docs/latest/commands/set/) and [redis/redis-py - GitHub](https://github.com/redis/redis-py)
+- [SET NX - Redis](https://redis.io/docs/latest/commands/set/) and [redis/redis-py - Redis](https://github.com/redis/redis-py)
