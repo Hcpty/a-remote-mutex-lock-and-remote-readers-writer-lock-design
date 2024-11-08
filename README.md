@@ -164,5 +164,5 @@ release_writer_lock('foobar', 123, 'desjn')
 
 ### Credits
 - Computer Systems: A Programmer's Perspective, Third Edition
-- [Mutex Lock - Wikipedia](https://en.wikipedia.org/wiki/Lock_(computer_science))
+- [Mutex lock - Wikipedia](https://en.wikipedia.org/wiki/Lock_(computer_science))
 - [Readers–writer lock - Wikipedia](https://en.wikipedia.org/wiki/Readers–writer_lock)
