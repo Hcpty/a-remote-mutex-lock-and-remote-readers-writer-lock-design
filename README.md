@@ -13,7 +13,7 @@ Database有一种特性，即创建unique记录的操作是互斥的，可以基
 # Prepare schema and table for Mutex Locks:
 session.execute(
   """CREATE TABLE mutex_locks (
-    PRIMARY KEY (resource_type, resource_id),
+    PRIMARY KEY ((resource_type, resource_id)),
     resource_type VARCHAR,
     resource_id INT,
     ticket VARCHAR,
